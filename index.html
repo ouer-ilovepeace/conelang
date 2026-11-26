@@ -89,6 +89,19 @@
   .download:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 16px 40px rgba(52,211,153,.34)}
   .download:active{transform:translateY(0)}
   .download:focus-visible{outline:3px solid #fff;outline-offset:4px}
+  /* 按钮组：两个按钮纵向排列 */
+  .btns{display:flex;flex-direction:column;align-items:center;gap:14px;margin:0 auto}
+  .download.secondary{
+    background:transparent;color:var(--mint);font-weight:600;
+    box-shadow:inset 0 0 0 1px rgba(94,234,212,.4);
+  }
+  .download.secondary:hover{background:rgba(94,234,212,.08);box-shadow:0 10px 28px rgba(52,211,153,.16),inset 0 0 0 1px rgba(94,234,212,.6)}
+  /* 更新说明小字 */
+  .notes{
+    margin:30px auto 0;max-width:36em;text-align:left;
+    font-size:12px;line-height:1.85;color:var(--muted);
+    white-space:pre-line;
+  }
   .ico{font-size:20px;line-height:1}
   .label{flex:1;text-align:left}
   .meta{font-size:11px;font-weight:600;opacity:.7;letter-spacing:.06em;white-space:nowrap}
@@ -96,6 +109,7 @@
   @media (max-width:480px){
     main{padding:44px 20px 36px}
     .download{width:100%;min-width:0;flex-wrap:wrap}
+    .btns{width:100%}
     .meta{width:100%;text-align:left;padding-left:34px}
   }
   @media (prefers-reduced-motion:reduce){
@@ -116,16 +130,25 @@
   <p class="ver">0.9.6</p>
   <p class="tagline">直接由 cone 源码生成 MASM32 汇编源文件</p>
 
-  <!-- ↓↓↓ 只改这一行 ↓↓↓
-       方式 A：把发行包 cone-0.9.6.zip 放在仓库根目录，保持现状即可
-       方式 B：换成 Release 直链或任意外链，例如
-       href="https://github.com/<owner>/<repo>/releases/download/v0.9.6/cone-0.9.6.zip"
-       注意：跨域地址下 download 属性会被浏览器忽略，表现为直接跳转下载 -->
+  <div class="btns">
   <a class="download" href="./cone-0.9.6.zip" download="cone-0.9.6.zip" aria-label="下载 cone 0.9.6 发行包">
     <span class="ico" aria-hidden="true">&#8595;</span>
     <span class="label">下载 cone 0.9.6</span>
     <span class="meta">Windows · MASM32 · ZIP</span>
   </a>
+  <a class="download secondary" href="./cone-0.9.e.zip" download="cone-0.9.e.zip" aria-label="下载 cone 0.9.e 发行包">
+    <span class="ico" aria-hidden="true">&#8595;</span>
+    <span class="label">下载 cone 0.9.e</span>
+    <span class="meta">Windows · LLVM x64 · ZIP</span>
+  </a>
+  </div>
+
+  <p class="notes">cone0.9.e最新更新:
+1.支持-llvm:x64后端
+2.x64全面cone语法，尽可能兼容conex86语法，conex64移除了asm{}块、seg块、win{}块、裸reg操作
+3.x86与x64分离，x86更底层，后端为masm32或者用户自指定；x64后端为为llvm23.1.6.0
+预计更新：x64端asm64{}块支持、标准库完善、头文件完善
+By Junze Mar</p>
 
   <p class="foot">Conev0.9.6 Copyright 2026 Compiler</p>
 </main>
