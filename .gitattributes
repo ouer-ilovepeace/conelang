@@ -2,6 +2,8 @@
 *.cone linguist-language=Cone
 *.v linguist-language=V
 *.asm linguist-generated=false
+*.md   linguist-documentation
+*.txt  linguist-documentation
 *.zip binary
 *.gz  binary
 *.exe binary
