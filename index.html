@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cone 0.9.6 — 下载</title>
+<meta name="description" content="cone 0.9.6 下载。cone 是一门直接由 cone 源码生成 MASM32 汇编源文件的语言。">
+<meta name="theme-color" content="#0b0f14">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 6 L54 50 H10 Z' fill='%235eead4'/%3E%3Cellipse cx='32' cy='50' rx='22' ry='6' fill='%2334d399'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#0b0f14;
+    --ink:#e8f1f2;
+    --muted:#8aa0a6;
+    --mint:#5eead4;
+    --mint-deep:#34d399;
+    --line:rgba(94,234,212,.14);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:ui-monospace,SFMono-Regular,"Cascadia Code",Consolas,"Liberation Mono","WenQuanYi Micro Hei",monospace;
+    display:grid;
+    place-items:center;
+    padding:24px;
+    overflow:hidden;
+  }
+  /* 背景：细网格 + 两团光晕，纯 CSS，无外部图片 */
+  body::before{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(94,234,212,.045) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(94,234,212,.045) 1px,transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 45%,#000 20%,transparent 100%);
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 45%,#000 20%,transparent 100%);
+  }
+  body::after{
+    content:"";
+    position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(45% 40% at 22% 24%,rgba(52,211,153,.16),transparent 70%),
+      radial-gradient(50% 45% at 80% 76%,rgba(99,102,241,.14),transparent 72%),
+      radial-gradient(120% 100% at 50% 50%,transparent 40%,rgba(0,0,0,.55) 100%);
+  }
+  main{
+    position:relative;z-index:1;
+    width:min(100%,560px);
+    text-align:center;
+    padding:56px 32px 44px;
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:linear-gradient(160deg,rgba(20,28,34,.82),rgba(11,15,20,.72));
+    -webkit-backdrop-filter:blur(8px);
+    backdrop-filter:blur(8px);
+    box-shadow:0 24px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  .mark{width:64px;height:64px;margin:0 auto 22px;display:block;filter:drop-shadow(0 0 18px rgba(94,234,212,.35))}
+  h1{
+    margin:0;
+    font-size:clamp(44px,9vw,68px);
+    line-height:1;
+    letter-spacing:-.06em;
+    font-weight:700;
+    background:linear-gradient(180deg,#fff,var(--mint));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .ver{
+    display:inline-block;margin:16px 0 0;
+    padding:4px 12px;border:1px solid var(--line);border-radius:999px;
+    font-size:13px;letter-spacing:.18em;color:var(--mint);
+    background:rgba(94,234,212,.06);
+  }
+  .tagline{margin:22px auto 34px;max-width:30em;font-size:14px;line-height:1.9;color:var(--muted)}
+  /* 全站唯一的交互元素 */
+  .download{
+    display:inline-flex;align-items:center;gap:14px;
+    min-width:288px;padding:16px 22px;
+    border:1px solid rgba(94,234,212,.45);border-radius:14px;
+    background:linear-gradient(135deg,var(--mint),var(--mint-deep));
+    color:#06231d;text-decoration:none;font-weight:700;font-size:16px;
+    box-shadow:0 10px 30px rgba(52,211,153,.24),inset 0 1px 0 rgba(255,255,255,.35);
+    transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+  }
+  .download:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 16px 40px rgba(52,211,153,.34)}
+  .download:active{transform:translateY(0)}
+  .download:focus-visible{outline:3px solid #fff;outline-offset:4px}
+  /* 按钮组：两个按钮纵向排列 */
+  .btns{display:flex;flex-direction:column;align-items:center;gap:14px;margin:0 auto}
+  .download.secondary{
+    background:transparent;color:var(--mint);font-weight:600;
+    box-shadow:inset 0 0 0 1px rgba(94,234,212,.4);
+  }
+  .download.secondary:hover{background:rgba(94,234,212,.08);box-shadow:0 10px 28px rgba(52,211,153,.16),inset 0 0 0 1px rgba(94,234,212,.6)}
+  /* 更新说明小字 */
+  .notes{
+    margin:30px auto 0;max-width:36em;text-align:left;
+    font-size:12px;line-height:1.85;color:var(--muted);
+    white-space:pre-line;
+  }
+  .ico{font-size:20px;line-height:1}
+  .label{flex:1;text-align:left}
+  .meta{font-size:11px;font-weight:600;opacity:.7;letter-spacing:.06em;white-space:nowrap}
+  .foot{margin:38px 0 0;font-size:11px;letter-spacing:.08em;color:rgba(138,160,166,.55)}
+  @media (max-width:480px){
+    main{padding:44px 20px 36px}
+    .download{width:100%;min-width:0;flex-wrap:wrap}
+    .btns{width:100%}
+    .meta{width:100%;text-align:left;padding-left:34px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .download{transition:none}
+    .download:hover,.download:active{transform:none}
+  }
+</style>
+</head>
+<body>
+<main>
+  <svg class="mark" viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <path d="M32 5 L55 49 H9 Z" fill="none" stroke="#5eead4" stroke-width="2.5" stroke-linejoin="round"/>
+    <ellipse cx="32" cy="49" rx="23" ry="6.5" fill="none" stroke="#34d399" stroke-width="2.5"/>
+    <path d="M32 5 L32 49" stroke="rgba(94,234,212,.35)" stroke-width="1.5" stroke-dasharray="3 4"/>
+  </svg>
+
+  <h1>cone</h1>
+  <p class="ver">0.9.6</p>
+  <p class="tagline">直接由 cone 源码生成 MASM32 汇编源文件</p>
+
+  <!-- ↓↓↓ 只改这一行 ↓↓↓
+       方式 A：把发行包 cone-0.9.6.zip 放在仓库根目录，保持现状即可
+       方式 B：换成 Release 直链或任意外链，例如
+       href="https://github.com/<owner>/<repo>/releases/download/v0.9.6/cone-0.9.6.zip"
+       注意：跨域地址下 download 属性会被浏览器忽略，表现为直接跳转下载 -->
+  <div class="btns">
+  <a class="download" href="./cone-0.9.6.zip" download="cone-0.9.6.zip" aria-label="下载 cone 0.9.6 发行包">
+    <span class="ico" aria-hidden="true">&#8595;</span>
+    <span class="label">下载 cone 0.9.6</span>
+    <span class="meta">Windows · MASM32 · ZIP</span>
+  </a>
+  <a class="download secondary" href="./cone-0.9.e.zip" download="cone-0.9.e.zip" aria-label="下载 cone 0.9.e 发行包">
+    <span class="ico" aria-hidden="true">&#8595;</span>
+    <span class="label">下载 cone 0.9.e</span>
+    <span class="meta">Windows · LLVM x64 · ZIP</span>
+  </a>
+  <a class="download secondary" href="./cone-0.9.p.zip" download="cone-0.9.p.zip" aria-label="下载 cone 0.9.p 发行包">
+    <span class="ico" aria-hidden="true">&#8595;</span>
+    <span class="label">下载 cone 0.9.p</span>
+    <span class="meta">Windows · ZIP</span>
+  </a>
+  </div>
+
+  <p class="notes">cone0.9.e最新更新:
+1.支持-llvm:x64后端
+2.x64全面cone语法，尽可能兼容conex86语法，conex64移除了asm{}块、seg块、win{}块、裸reg操作
+3.x86与x64分离，x86更底层，后端为masm32或者用户自指定；x64后端为为llvm23.1.6.0
+预计更新：x64端asm64{}块支持、标准库完善、头文件完善
+By Junze Mar</p>
+
+  <p class="foot">Conev0.9.6 Copyright 2026 Compiler</p>
+</main>
+</body>
+</html>
