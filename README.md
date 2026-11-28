@@ -4,6 +4,8 @@ cone 是一门直接由 `.cone` 源码生成 MASM32 汇编源文件（`.asm`）�
 
 上一版为 0.9.5。0.9.6 是 `-O1` 正确性修复版，不改语法、EBNF、类型系统、coneABI 与 SEH 生成结构。
 
+ConeLang 现已更新至最新版本Cone0.9.p，conex64下对asm64{}块有新的支持，对函数调用、参数返回、多文件编译、报错警告、try-except、enum、__link__、__compile__等有更明确的更新与支持。
+
 ## 本版内容
 
 **修复**
