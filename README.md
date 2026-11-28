@@ -27,7 +27,7 @@ ConeLang 现已更新至最新版本Cone0.9.p，conex64下对asm64{}块有新的
 ## 构建与运行
 
 ```
-cd cone && v build .
+v -prod -cc cl -cflags "/GL /O2 /Ot /Oi /Ob3" -ldflags "/LTCG /OPT:REF /OPT:ICF /STACK:16777216" .
 cone -s demo.cone        # 生成 .asm
 cone -s -O1 demo.cone    # 生成并优化 .asm
 cone -s -ml demo.cone    # 编译并链接
