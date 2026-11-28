@@ -1,0 +1,10 @@
+* text=auto eol=lf
+*.cone linguist-language=Cone
+*.v linguist-language=V
+*.asm linguist-generated=false
+*.zip binary
+*.gz  binary
+*.exe binary
+*.obj binary
+*.lib binary
+*.dll binary
