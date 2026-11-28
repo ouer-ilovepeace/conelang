@@ -1,7 +1,8 @@
 * text=auto eol=lf
 *.cone linguist-language=Assembly
+*.cone linguist-detectable=true
 *.v linguist-language=V
-#*.asm linguist-generated=false
+*.asm linguist-generated=false
 *.md   linguist-documentation
 *.txt  linguist-documentation
 *.zip binary
