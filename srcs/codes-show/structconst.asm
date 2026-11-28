@@ -1,0 +1,80 @@
+; cone 0.9.p - generated MASM32 assembly
+.586
+.model flat, stdcall
+option casemap :none
+option scoped
+assume fs:nothing
+
+include /data/workspace/masm32/include/windows.inc
+include /data/workspace/masm32/include/kernel32.inc
+includelib /data/workspace/masm32/lib/kernel32.lib
+include /data/workspace/masm32/include/user32.inc
+includelib /data/workspace/masm32/lib/user32.lib
+include /data/workspace/masm32/include/msvcrt.inc
+includelib /data/workspace/masm32/lib/msvcrt.lib
+ttt struct
+    a DWORD ?
+    b DWORD ?
+ttt ends
+
+use1 proto stdcall :Vector2, :DWORD
+
+.const
+__cone_stt_0 Vector2 <0.0,0.0>
+__cone_stt_1 ttt <0,0>
+__cone_stt_2 Vector2 <1.0,2.0>
+__cone_stt_3 ttt <1,2>
+__cone_stt_4 ttt <3,4>
+__cone_stt_5 Vector2 <3.0,4.0>
+
+.data?
+fuck dd ?
+__cone_itmp dd ?
+
+.code
+start proc uses ebx esi edi
+    invoke func1, 0, __cone_stt_0, offset __cone_stt_1
+    invoke func2, __cone_stt_2
+    invoke func2, __cone_stt_2
+    invoke func3, __cone_stt_3, __cone_stt_3, __cone_stt_4
+    invoke use1, __cone_stt_5, 0
+    invoke ExitProcess, 0
+start endp
+
+__cone_default_seh_handler:
+    mov eax, [esp+4]
+    mov ecx, [eax]
+    mov edx, [esp+8]
+    mov [edx+8], ecx
+    mov eax, [esp+12]
+    mov dword ptr [eax+184], offset __cone_default_seh_dispatch
+    mov dword ptr [eax+196], edx
+    xor eax, eax
+    jmp __cone_seh_ret_stub
+__cone_default_seh_dispatch:
+    mov eax, [esp+8]
+    mov fuck, eax
+    push edx
+    mov edx, [esp+4]
+    mov fs:[0], edx
+    pop edx
+    add esp, 12
+    invoke ExitProcess, fuck
+
+__cone_default_entry:
+    push 0
+    push offset __cone_default_seh_handler
+    push fs:[0]
+    mov fs:[0], esp
+    call start
+    push edx
+    mov edx, [esp+4]
+    mov fs:[0], edx
+    pop edx
+    add esp, 12
+    ret
+
+__cone_seh_ret_stub:
+    ret
+
+end __cone_default_entry
