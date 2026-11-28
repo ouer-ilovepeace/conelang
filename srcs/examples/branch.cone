@@ -1,0 +1,54 @@
+include msvcrt
+
+; 数据定义：引号内即字节流、无转义（与字符常量是两套东西）
+hello:"Hello World",0dh,0ah,0
+caption:"cone 0.3",0
+
+int r
+
+def choose(x:int)stdcall{
+	if x==1{
+		win.crt_printf("one\n")
+	}
+	elseif x==2{
+		win.crt_printf("two\n")
+	}
+	else{
+		win.crt_printf("other\n")
+	}
+	return x
+}
+
+def start(){
+	; 1) win.XXX 免声明：函数调用 / 宏常量 / 变量都视为 MASM 侧已定义
+	win.MessageBoxA(0,addr caption,addr hello,win.MB_OK)
+	r=win.lpxxx
+	eax=win.MB_OK
+
+	; 2) 字符常量：默认补 0、支持 \r \n \t 转义、按内容去重、调用时传地址
+	win.crt_printf(addr hello)            ; 与下一行等价
+	win.crt_printf("Hello World\r\n")     ; -> invoke crt_printf, offset __cone_str_0
+	win.crt_printf("Hello World\r\n")     ; 去重：还是 __cone_str_0
+	win.crt_printf("tab:\t end\n")        ; 转义 -> "tab:",09h," end",0ah,0
+
+	; 3) if / elseif / else 尽量生成 MASM 的 .if / .elseif / .else / .endif
+	if r==0{
+		win.crt_printf("zero\n")
+	}
+	elseif r>0{
+		win.crt_printf("positive\n")
+	}
+	else{
+		win.crt_printf("negative\n")
+	}
+	; 嵌套 + 逻辑运算（仍是 .if 路径）
+	if r>=0 && r<100{
+		win.crt_printf("range\n")
+	}
+	; 降级路径：条件里含函数调用，MASM .if 不支持，改 cone 求 eax + 显式跳转
+	if win.crt_printf("cond\n"){
+		win.crt_printf("nonzero\n")
+	}
+	return 0
+}
+end start

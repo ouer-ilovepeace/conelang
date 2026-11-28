@@ -1,0 +1,8 @@
+; cone 0.9.7 -llvm 回归：printf 外部调用 + 全局初值 + 字符串常量
+include msvcrt
+int g=7
+def main(){
+    win.crt_printf("cone llvm: %d\n", g)
+    return 0
+}
+end main

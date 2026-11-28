@@ -1,0 +1,16 @@
+; cone 0.9.b -llvm:x64 回归：byte/word/int/long 混合宽度成员与局部变量
+include msvcrt
+import x64crt
+struct rec{ p1 byte  p2 word  p3 int  p4 long }
+rec r={1,2,3,4}
+fmt:"a=%d k=%d s=%d\n",0
+def main(){
+    byte x=7
+    word y=9
+    long z=11
+    r.p1 = x
+    r.p3 = r.p3 + 5
+    printf(addr fmt, r.p1, r.p3, sizeof(rec))
+    return 0
+}
+end main

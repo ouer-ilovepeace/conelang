@@ -1,0 +1,11 @@
+; 多文件联合链接示例（主单元：提供 end）
+import x64crt
+func helper(:int) int
+fmt:"helper(21)=%d\n",0
+def main(){
+    f64 q=2.25
+    int n=helper(21)
+    printf(addr fmt, n)
+    return 0
+}
+end main

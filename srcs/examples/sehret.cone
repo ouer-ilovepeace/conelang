@@ -1,0 +1,28 @@
+; cone 0.7 · try / except 体内的 return
+; 非入口函数的 try 体内 return 不能直接 ret（会带着 SEH 帧返回，fs:[0] 悬空），
+; 编译器把它改写成跳到帧卸载之后的统一 _ret 汇合点。
+E_DIV0 equ 0C0000094h
+
+func touch(:int)stdcall
+
+def pick(x:int)stdcall{
+    try{
+        touch(x)
+        return eax            ; -> jmp __cone_seh_<fn>_0_ret，卸载后 ret
+    }
+    except E_DIV0{
+        return -1             ; except 分支里的 return 同样走汇合点
+    }
+    except{
+        return -2
+    }
+    return 0                  ; 帧外兜底（函数必须至少有一条 return）
+}
+
+def start(){
+    int r
+    r=pick(3)
+    return 0
+}
+
+end start

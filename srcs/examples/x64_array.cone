@@ -1,0 +1,19 @@
+; cone 0.9.b -llvm:x64 回归：全局/局部数组 + [] 索引读写 + for 循环
+include msvcrt
+import x64crt
+buf int[8]
+fmt:"v=%d\n",0
+def main(){
+    int i=0
+    arr int[4]
+    for i<8{
+        [int buf + i*4] = i*3
+    }
+    for i<4{
+        [int arr + i*4] = i+10
+    }
+    printf(addr fmt, [int buf + 4*4])
+    printf(addr fmt, [int arr + 2*4])
+    return 0
+}
+end main

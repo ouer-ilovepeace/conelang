@@ -1,0 +1,11 @@
+; cone 0.9.7 -llvm 回归：byte/word 全局与截断存储、窄类型 zext
+byte b=3
+word w=5
+int r
+def main(){
+    b=b+1
+    w=w+2
+    r=b+w
+    return r
+}
+end main

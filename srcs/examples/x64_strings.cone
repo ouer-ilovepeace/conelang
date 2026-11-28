@@ -1,0 +1,13 @@
+; cone 0.9.b -llvm:x64 回归：CRT 字符串外部调用 printf/puts/strlen + 字符串常量去重
+include msvcrt
+import x64crt
+msg:"hello x64",0
+fmt:"len=%d\n",0
+def main(){
+    int n = strlen(addr msg)
+    puts(addr msg)
+    printf("n=%d\n", n)
+    printf(addr fmt, n)
+    return 0
+}
+end main

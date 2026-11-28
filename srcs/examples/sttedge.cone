@@ -1,0 +1,17 @@
+include msvcrt
+
+; cone 0.6 · 需求 2 补充 —— 隐名标签与用户全局符号冲突时加下划线；
+; ? 占位；初始化项里的字符串内联为字节流原文（不误入 __cone_str_N 池）；
+; 相同类型与初值的结构体常量共用一个隐名标签。
+
+struct t{ a int  b int  third int }
+int __cone_stt_0
+
+def start(){
+	win.f1(t{1,?,3},t{1,?,3},addr t{1,?,3})
+	win.f2(t{8,8,8})
+	win.f3(t{1,2,"hi"})
+	return 0
+}
+
+end start

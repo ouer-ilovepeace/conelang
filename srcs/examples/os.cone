@@ -1,0 +1,66 @@
+;Cone Language os lib,for lay a bridge between cone and masm32
+SHARE_DELETE equ win.FILE_SHARE_DELETE
+SHARE_READ   equ win.FILE_SHARE_READ
+SHARE_WRITE  equ win.FILE_SHARE_WRITE
+wonly equ 00000718h
+ronly equ 00000719h
+aonly equ 0000071Ah
+wplus equ 0000071Bh
+rplus equ 0000071Ch
+aplus equ 0000071Dh
+NOMODE equ 000007A0h
+def memmove(_lpdst:int,_lpsrc:int,_size:int){
+    asm{
+        cld
+        mov ecx,%_size
+        mov esi,%_lpsrc
+        mov edi,%_lpdst
+        rep movsb
+    }
+    return eax
+}
+def getsize(_hFile:int){
+    int @FileSizeHigh
+    win.GetFileSize(_hFile,addr @FileSizeHigh)
+    if eax!=win.INVALID_FILE_SIZE{
+        edx=@FileSizeHigh
+        return eax
+    } 
+    return 0
+}
+def seek(_hFile:int,_size:long,_startfrom:int){
+    win.SetFilePointer(_hFile,_size,_startfrom)
+    return eax
+}
+def open(_filename:int,_mode:int,_share:int){
+    match _mode{
+        wonly{win.CreateFile(_filename,
+                win.GENERIC_READ | win.GENERIC_WRITE,_share,0,win.OPEN_ALWAYS,win.FILE_ATTRIBUTE_NORMAL,0)
+                if eax!=(win.INVALID_HANDLE_VALUE){
+                    
+                }
+               else{
+                   return 0
+               }
+             }
+        ronly{}
+        aonly{}
+        wplus{}
+        rplus{}
+        aplus{}
+        default{}
+    }
+    return 0
+}
+def read(){
+    return 0
+}
+def close(){
+    return 0
+}
+def write(){
+    return 0
+}
+def setattr(){
+    return 0
+}

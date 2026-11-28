@@ -1,0 +1,32 @@
+; cone 0.9.b -llvm:x64 回归：综合：import + equ + 结构体 + 数组 + word 索引 + cone 标准库
+; 0.9.a 修正：第二个 for 前补 i=0（否则沿用第一个循环结束时的 i=6，循环体不执行，y 恒为 0）；
+; 循环体内补 i++（cone 的 for 只判条件、不自增）。
+; 0.9.b：win.crt_printf 已禁用，改 `import x64crt` + 裸名 printf(...)。
+include msvcrt
+import x64lib
+import x64crt
+BASE equ 3
+N equ BASE*2
+struct cell{ val int  tag byte }
+cell one={7,1}
+buf int[N]
+fmt:"x=%d y=%d z=%d\n",0
+def main(){
+    int i=0
+    int acc=0
+    arr word[4]
+    for i<N{
+        [int buf + i*4] = x64lib_twice(i)
+        acc = acc + [int buf + i*4]
+        i++
+    }
+    i=0
+    for i<4{
+        [word arr + i*2] = i+1
+        i++
+    }
+    one.val = one.val + acc
+    printf(addr fmt, one.val, [word arr + 2*2], sizeof(cell))
+    return x64lib_add(acc, BASE)
+}
+end main

@@ -1,0 +1,87 @@
+; cone 0.9prelease：结构体偏移由 cone 计算 / align 对齐 / sizeof / 立即数规范化
+include msvcrt
+
+struct xy{
+    x int
+    y int
+}
+struct nested{
+    a byte
+    b xy
+    w2 word
+}
+struct aligned align{
+    a byte        ; off 0
+    b int         ; off 4  (前插 3 字节 padding)
+    w2 word       ; off 8
+    d long        ; off 16 (前插 6 字节 padding)
+}                   ; 24 已是 8 的整数倍，无需尾 padding -> size 24
+
+win{
+    RECT
+    MB_OKCANCEL
+}
+BASE equ 10
+OFFS equ xy.y + BASE          ; equ 里也能用 cone 结构体偏移立即数
+hello:"Hello World",0dh,0ah,0  ; 数据字节数组，sizeof = 11+1+1+1 = 14
+
+xy stxy={}
+aligned stalign={}
+RECT wrc
+
+def start(){
+    ; 1) structtype.member 视为立即数偏移（cone 计算）
+    int a = xy.x              ; 0
+    int b = xy.y              ; 4
+    int n1 = nested.b.y       ; 嵌套链：a(0)+padding? 非 align -> 1+4=5
+    int n2 = aligned.b        ; align: 4
+    int n3 = aligned.d        ; align: 16
+
+    ; 2) sizeof 立刻数
+    int s1 = sizeof(int)      ; 4
+    int s2 = sizeof(xy)       ; 8
+    int s3 = sizeof(aligned)  ; 24
+    int s4 = sizeof(hello)    ; 14
+    int s5 = sizeof(stalign)  ; 24（结构体实例）
+    arr int[sizeof(aligned)/4]  ; 数组维度也能用 cone 立即数（cone 数组语法：名 类型[长度]）
+
+    ; 3) 立即数统一：addr / $ / equ 宏 与 sizeof/偏移混用
+    int p = addr stxy
+    int q = OFFS
+    int r = BASE + sizeof(xy)
+
+    ; 4) asm{} 里 structtype.member / sizeof 由 cone 生成立即数
+    asm{
+        mov eax, xy.y               ; -> mov eax, 4
+        mov ebx, sizeof(aligned)    ; -> mov ebx, 24
+        mov ecx, %aligned.d         ; -> mov ecx, 16
+        mov edx, %sizeof(xy)        ; -> mov edx, 8
+    }
+
+    ; 5) asm64{} 里 cone 立即数编码成 x64 机器码
+    asm64{
+        mov eax, xy.y           ; -> db 0B8h,04h,00h,00h,00h
+        mov ecx, sizeof(xy)     ; -> db 0B9h,08h,00h,00h,00h
+        add eax, aligned.b      ; -> add eax, 4
+        syscall
+    }
+
+    ; 6) win 外部结构体字段偏移透传给 MASM32（cone 不计算，MASM 换算成偏移立即数）
+    asm{
+        mov esi, offset wrc
+        mov eax, [esi+RECT.left]    ; 原样输出 RECT.left
+        mov ebx, [esi+win.RECT.top] ; win. 前缀也原样输出
+    }
+
+    ; 7) 条件 / match / except 都能用 cone 立即数
+    if b == xy.y{
+        a = sizeof(xy)
+    }
+    match a{
+        sizeof(xy){ a = xy.y }
+        default{ a = 0 }
+    }
+    return 0
+}
+
+end start

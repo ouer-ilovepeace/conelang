@@ -1,0 +1,32 @@
+; cone 0.9.2：返回类型校验 + coneABI 标量返回的警告/扩展
+; 1) 声明返回结构体 A，return 值必须是 A 类型实例（类型不一致直接报错）
+; 2) 标量返回类型：return 尺寸 > 声明尺寸报错；< 声明尺寸警告并零扩展
+; 3) 8 字节返回类型且 return 值匹配时，edx:eax 完整返回（不再错误清零 edx）
+struct pair{ xx int  yy int }
+pair gpair={}
+long gl=9
+int gi=3
+func fpair() pair
+func flong() long
+func fint() int
+func flongmatch() long
+def fpair() pair{
+    return gpair
+}
+def flong() long{
+    return gi                ; 4 < 8：警告 + xor edx,edx 零扩展
+}
+def fint() int{
+    return 1                 ; 匹配：正常 eax
+}
+def flongmatch() long{
+    return gl                ; 8 == 8：edx:eax 完整返回
+}
+def start(){
+    pair p1 = fpair()
+    long v1 = flong()
+    int v2 = fint()
+    long v3 = flongmatch()
+    return 0
+}
+end start

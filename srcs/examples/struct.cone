@@ -1,0 +1,68 @@
+include msvcrt
+
+; 基础结构体：两个 int 字段
+struct ttt{
+	x int
+	y int
+}
+
+; 三个标量字段，用来演示 ? 占位
+struct tri{
+	a int
+	b int
+	d int
+}
+
+; 嵌套结构体 + 数组成员（type 也可以是结构体）
+struct box{
+	p ttt
+	tag int
+	buf byte[16]
+}
+
+; 结构体变量的四种形态
+ttt stttt={1,2}		; .data  stttt ttt <1,2>
+ttt blank			; .data? blank ttt <>
+ttt zero={}			; .data  zero ttt <>
+ttt part={7}		; 只初始化前几个成员
+tri holes={1,?,2}		; 显式 ? 跳过某成员
+box packed			; 嵌套结构体变量，不初始化
+
+fmt:"value is %d",0dh,0ah,0
+
+; 前置声明 + 后置定义（cone 0.3 的 func/def 一致性）
+func ldh1(:ttt)
+
+def ldh1(arg1:ttt)stdcall{
+	arg1.y=arg1.x		; 结构体成员写：mem->mem 走 eax 中转
+	return arg1.y		; 结构体成员读
+}
+
+def start(){
+	ttt localst		; 局部结构体变量 -> local localst:ttt
+	int lpst
+	localst.x=3
+	localst.y=4
+
+	eax=ldh1(stttt)		; MASM32 允许 invoke 直接传结构体变量
+	win.crt_printf(addr fmt,eax)
+
+	stttt.x=5
+	lpst=addr stttt
+	eax=[int lpst+ttt.x]	; ttt.x 是字段偏移常量，lpst 里存的是地址
+	win.crt_printf(addr fmt,eax)
+
+	eax=addr stttt
+	eax=[int eax+ttt.y]	; 寄存器基址 + 字段偏移
+	win.crt_printf(addr fmt,eax)
+
+	eax=localst.y
+	win.crt_printf(addr fmt,eax)
+
+	eax=holes.a
+	win.crt_printf(addr fmt,eax)
+
+	return 0			; invoke ExitProcess,0
+}
+
+end start

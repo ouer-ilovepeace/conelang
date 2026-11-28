@@ -1,0 +1,42 @@
+; cone 0.7 优化 · 需求 3：except 获取异常错误码
+; 特殊标识符 fuck 是编译器定义在 .data? 段第一个位置的 4 字节变量；
+; 每次 SEH 捕获异常（含带 ErrorType 的分支）都把 ExceptionCode 写进 fuck，
+; cone 用户可直接读写它。fuck 是保留标识符，不能重新声明。
+E_DIV0 equ 0C0000094h
+E_ACCESS equ 0C0000005h
+
+func touch(:int)stdcall
+
+def start(){
+    int code=0
+    try{
+        touch(1)
+    }
+    except E_DIV0{
+        code=fuck                  ; 带 ErrorType 的分支也能读 fuck
+    }
+    except E_ACCESS{
+        code=fuck+1
+    }
+    except{
+        code=fuck+2                ; 通配 except{} 里读 fuck（主要用法）
+    }
+    ; 嵌套 try：内层捕获同样写 fuck，各帧独立
+    try{
+        try{
+            touch(code)
+        }
+        except{
+            code=code+fuck
+        }
+    }
+    except{
+        code=fuck
+    }
+    ; fuck 本质是普通 4 字节变量，没有 try 也能直接读写
+    fuck=0
+    code=fuck
+    return code
+}
+
+end start

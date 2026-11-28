@@ -1,0 +1,40 @@
+; cone 0.9.2 windowsx86ABI：未声明返回类型、return 整个结构体实例
+; 按结构体真实 size 精确读，全部返回、不多返回、不少返回：
+;   <=4 -> eax（1/2 字节 movzx，3 字节 word+byte 组合，4 字节 dword）
+;   5~8 -> edx:eax（高半部分 1/2/3 字节精确读）
+;   >8  -> 结构体指针（lea eax, [实例]）
+; align 结构体的 size 含 padding，读取按含 padding 的正确值。
+struct s3{ aa byte  bb byte  cc byte }
+struct s5{ aa int  bb byte }
+struct s6{ aa int  bb word }
+struct s7{ aa int  bb word  cc byte }
+struct s8{ aa int  bb int }
+s3 g3={}
+s5 g5={}
+s6 g6={}
+s7 g7={}
+s8 g8={}
+def r3(){
+    return g3
+}
+def r5(){
+    return g5
+}
+def r6(){
+    return g6
+}
+def r7(){
+    return g7
+}
+def r8(){
+    return g8
+}
+def start(){
+    r3()
+    r5()
+    r6()
+    r7()
+    r8()
+    return 0
+}
+end start

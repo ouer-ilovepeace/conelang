@@ -1,0 +1,15 @@
+; cone 0.9.7 -llvm 回归：函数定义/调用、算术、比较、局部初值
+int a=3
+int b
+def sq(x:int)int{
+    return x*x
+}
+def main(){
+    int n=4
+    b=sq(n)+a
+    if b>10{
+        b=b-1
+    }
+    return b
+}
+end main

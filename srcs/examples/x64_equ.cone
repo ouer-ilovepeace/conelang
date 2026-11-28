@@ -1,0 +1,14 @@
+; cone 0.9.b -llvm:x64 回归：equ 数值宏链式引用 + 数组维度 + sizeof
+include msvcrt
+import x64crt
+BASE equ 4
+N equ BASE*2
+M equ N+3
+buf byte[M]
+fmt:"n=%d m=%d\n",0
+def main(){
+    arr int[BASE]
+    printf(addr fmt, sizeof(buf), M)
+    return 0
+}
+end main

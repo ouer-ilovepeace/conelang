@@ -1,0 +1,20 @@
+include msvcrt
+
+; cone 0.6 · 需求 2 —— 结构体常量 Type{...} / win.Type{...}
+; 默认按值传入（masm32 侧直接结构体），写 addr 则取隐名标签地址。
+; 隐名标签参考字符串常量设计：按 (类型 + 初值文本) 去重 -> __cone_stt_N，
+; 与用户全局符号冲突时反复加下划线。
+
+struct ttt{ a int  b int }
+func use1(:win.Vector2,:int)stdcall
+
+def start(){
+	win.func1(0,win.Vector2{0.0,0.0},addr ttt{0,0})
+	win.func2(win.Vector2{1.0,2.0})
+	win.func2(win.Vector2{1.0,2.0})   ; 与上一行共用同一个 __cone_stt_N
+	win.func3(ttt{1,2},ttt{1,2},ttt{3,4})
+	use1(win.Vector2{3.0,4.0},0)
+	return 0
+}
+
+end start

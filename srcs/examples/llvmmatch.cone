@@ -1,0 +1,12 @@
+; cone 0.9.7 -llvm 回归：match / case / default
+int m=2
+int r
+def main(){
+    match m{
+        1{ r=11 }
+        2{ r=22 }
+        default{ r=0 }
+    }
+    return r
+}
+end main

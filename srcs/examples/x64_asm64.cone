@@ -1,0 +1,39 @@
+; cone 0.9.p：asm64{} 在 -llvm:x64 下的回归示例
+;   * masm64 语法的 x64 汇编指令（type ptr / [...] / gs: / fs: / 标号）
+;   * db / dw / dd / dq / db N dup(...)
+;   * %+标识符 / %标识符 引用 cone 全局变量、局部变量、形参、数据段
+;   * 汇编指令原样交给 LLVM 汇编器，cone 不修改、不 optimize
+import x64crt
+int gvar
+fmt:"g=%d\n",0
+
+asm64{
+    xor eax,eax
+    tdata:
+        db 90h, 0CCh
+        dw 1234h
+        dd 1, 2
+        dq 3
+        db 4 dup(0AAh)
+        inc eax
+        jmp tdata
+}
+
+def start(){
+    int local=7
+    asm64{
+        mov rax, qword ptr [%+gvar]
+        mov rsi, gs:[60h]
+        mov rdi, fs:[18h]
+        mov qword ptr [%local], rax
+        db 90h
+        again:
+            inc eax
+            cmp eax, 10
+            jb again
+        nop
+    }
+    printf(addr fmt, local)
+    return 0
+}
+end start

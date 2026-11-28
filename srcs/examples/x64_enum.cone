@@ -1,0 +1,26 @@
+; -llvm:x64 回归：enum + defsym + ifdef/ifndef/elsedef
+; 用 -D[DEBUG] 切换 N 与 cap 的内容；未选中分支的声明完全不参与编译。
+import x64crt
+enum color{ red, green, blue }
+enum flags{ AA=1, BB=10, CC }
+enum mode{ X Y Z }
+defsym LOCAL_SYM
+
+ifdef DEBUG{
+    N equ 100
+    cap:"DEBUG 版",0
+}
+elsedef{
+    N equ 7
+    cap:"RELEASE 版",0
+}
+ifndef NEVERSET{ M equ 3 }
+elsedef{ M equ 99 }
+ifdef LOCAL_SYM{ K equ 5 }
+
+fmt:"blue=%d CC=%d Z=%d N=%d M=%d K=%d\n",0
+def main(){
+    printf(addr fmt, blue, CC, Z, N, M, K)
+    return N
+}
+end main

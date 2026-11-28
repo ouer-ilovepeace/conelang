@@ -1,0 +1,23 @@
+include msvcrt
+
+; cone 0.6 · 需求 1 补充 —— win 关键字的全场景覆盖：
+; 全局变量 / const / STRUCT 字段 / PROTO 形参 / 局部变量 /
+; 字段偏移 / 结构体常量 / addr 结构体常量 / win 宏常量。
+
+struct Holder{ pt win.POINT  n int }
+win.POINT gOrigin ={10,20}
+win.RECT gRect ={0,0,640,480}
+func draw(p:win.POINT,r:win.RECT)stdcall
+
+def start(){
+	win.POINT localpt
+	win.RECT localrc
+	Holder h
+	h.n=win.SW_SHOW
+	localpt=gOrigin
+	draw(win.POINT{1,2},win.RECT{0,0,1,1})
+	draw(addr win.POINT{3,4},gRect)
+	return win.SM_CXSCREEN
+}
+
+end start

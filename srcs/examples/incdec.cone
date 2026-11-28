@@ -1,0 +1,40 @@
+include msvcrt
+
+; cone 0.6 fix1 · 需求 5 —— ++ / -- 与整数赋值优化
+; reg++ / mem++ 直接生成 inc / dec；a=a+2 直接生成 add a,2，
+; 不再 mov eax,a -> mov ecx,2 -> add eax,ecx -> mov a,eax。
+
+struct Pt{ x int  y int }
+int a
+int g
+byte b
+Pt pt
+buf byte[16]
+
+def start(){
+	eax++                 ; inc eax
+	eax--                 ; dec eax
+	g++                    ; inc g
+	g--                    ; dec g
+	b++                    ; inc byte ptr b
+	int lv
+	lv++                ; inc local
+	pt.x++                 ; inc pt.x
+	pt.y--                 ; dec pt.y
+	[byte buf]++           ; inc byte ptr [buf]
+	[dword buf+4]--        ; dec dword ptr [buf+4]
+	a=a+2                  ; add a, 2
+	a=a-3                  ; sub a, 3
+	a=a+1                  ; inc a
+	a=a-1                  ; dec a
+	a=a|0Fh                ; or  a, 0Fh
+	a=a&0F0h               ; and a, 0F0h
+	a=a^0FFh               ; xor a, 0FFh
+	a=a<<2                 ; shl a, 2
+	a=a>>1                 ; shr a, 1
+	lv=lv+2          ; add local, 2
+	pt.x=pt.x+4            ; add pt.x, 4
+	return 0
+}
+
+end start

@@ -1,0 +1,21 @@
+; cone 0.8prelease · 源码内附加编译 / 链接参数
+; __compile__ "内容" 等价于命令行 -addm[内容]
+; __link__    "内容" 等价于命令行 -addl[内容]
+; 引号本身不传出去；内容原样插在「命令」与「被编译 / 链接的文件」之间。
+; 多条指令按源码顺序拼接；命令行 -addm / -addl 在前，源码指令在后。
+__compile__ "/Zi /Fl"
+__compile__ "/Sa"
+__link__ "/debug /opt:ref"
+__link__ "/machine:ix86"
+
+; 配合 TRUE/FALSE/NULL 与新的 include 形态一起演示
+TRUE equ 1
+include msvcrt
+include mylib.lib
+
+def start(){
+    int r=TRUE
+    return r
+}
+
+end start

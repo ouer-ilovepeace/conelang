@@ -1,0 +1,17 @@
+; -llvm:x64 回归：标识符里的 @ / $ / ?
+; LLVM 裸名不接受 @ 和 ?，编译器自动写成 @"name@" / %"name?"；$ 原样输出。
+include user32
+func MessageBoxA(:long,:long,:long,:int) int
+g@lobal:"Cone @ $ ?",0
+int q$st=9
+
+def add@(x@:int, y?:int) export int{
+    int a$b=x@+y?
+    return a$b
+}
+def st?art(){
+    int r=add@(1,2)
+    MessageBoxA(0, addr g@lobal, addr g@lobal, r+q$st)
+    return r
+}
+end st?art

@@ -1,0 +1,10 @@
+; cone 0.9.b -llvm:x64 回归：stdcall 在 x64 下也不产生符号修饰
+; 0.9.a 曾把 stdcall 写成 `_name@N`；0.9.b 依据 dumpbin /exports kernel32.lib
+; （导出全是裸名）修正：统一 Windows x64 ABI 后 c / stdcall 都只是语法兼容位，
+; 链接符号一律是 cone 里写的原名。本例 declare 应是裸名 @addpair。
+func addpair(:int,:int) stdcall int
+def main(){
+    int s=addpair(20,22)
+    return s
+}
+end main

@@ -1,0 +1,15 @@
+; -llvm:x64 回归：include 的链接库语义（import 仍是源码级导入）
+;   include user32        -> lld-link ... user32.lib
+;   include kernel32.lib  -> lld-link ... kernel32.lib
+;   import x64crt         -> 合并 std/x64crt.cone 的源码声明，不产生链接项
+; 需要补 CRT 路径时：cone -llvm:x64 -addl[ /libpath:Z:\masm64\lib64 ] x64_include.cone
+include user32
+include kernel32.lib
+import x64crt
+fmt:"include ok: %d\n",0
+
+def main(){
+    printf(addr fmt, 42)
+    return 0
+}
+end main

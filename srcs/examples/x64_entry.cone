@@ -1,0 +1,14 @@
+; -llvm:x64 回归：入口函数自动以 ExitProcess 结束
+; 源码里**不写** ExitProcess；编译器为 end start 指定的入口生成
+;   call void @ExitProcess(i32 <返回值>) / unreachable
+; 并自动把 kernel32.lib 汇入链接命令（见 .llvm.bat）。
+; 这样入口不再用 ret 退出进程，避开隐式线程退出路径上的 DLL detach 崩溃。
+include user32
+func MessageBoxA(:long,:long,:long,:int) int
+cap:"Cone entry",0
+
+def start(){
+    MessageBoxA(0, addr cap, addr cap, 0)
+    return 0
+}
+end start

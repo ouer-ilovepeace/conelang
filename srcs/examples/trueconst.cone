@@ -1,0 +1,25 @@
+; cone 0.8prelease · TRUE / FALSE / NULL 不再是 MASM32 保留标识符
+; 它们是 windows.inc 里的 equ 常量，不是汇编指令 / 伪指令 / 寄存器。
+; cone 侧数值 equ 本来就折叠成立即数、不往 .asm 里写 equ 行，
+; 所以用它们当 cone 标识符不会与 MASM 侧预定义符号冲突。
+TRUE equ 1
+FALSE equ 0
+NULL equ 0
+FLAG equ TRUE+FALSE+3
+
+def start(){
+    int a=TRUE
+    int b=FALSE
+    int z=NULL
+    int d=FLAG
+    int TRUEVAR=TRUE
+    if a==TRUE{
+        b=b+d
+    }
+    if z==FALSE{
+        TRUEVAR=TRUEVAR+d
+    }
+    return a+b+z+d+TRUEVAR
+}
+
+end start

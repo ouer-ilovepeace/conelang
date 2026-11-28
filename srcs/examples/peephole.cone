@@ -1,0 +1,19 @@
+; cone 0.9.3：指令生成优化示例
+; 1) a = a + 1 / a = a - 1 由 peephole 直接生成 inc / dec（不是 add/sub 立即数）
+; 2) 函数返回结构体的多字节拷贝改用 cld + rep movsd（尾部 movsw / movsb）
+struct big{ aa int  bb int  cc int }
+big gbig={}
+big dstbig={}
+func mkbig() big
+def mkbig() big{
+    return gbig
+}
+def start(){
+    int v1 = 1
+    v1 = v1 + 1
+    v1 = v1 - 1
+    v1 = v1 + 1
+    dstbig = mkbig()
+    return v1
+}
+end start

@@ -1,0 +1,38 @@
+include msvcrt
+
+; cone 0.6 fix2 · win{...} 批量声明 —— 块里每个名字等价于写了一次 win.名字
+; cone 侧不查符号表、不生成任何 MASM 代码，输出时原样写名字。
+; 原来的 win.xxx 写法完全不变；块可写在顶层 / 函数体内 / 文件末尾（全文件生效）。
+
+win{
+    MB_OK
+    MB_ICONSTOP
+    crt_printf
+    GENERIC_READ, GENERIC_WRITE     ; 逗号与换行都可以分隔
+}
+
+IO_MODE equ GENERIC_READ | GENERIC_WRITE   ; equ 里也能用裸名字（编译期表达式）
+int g
+int r
+
+func take(:int,:int)stdcall
+
+def show(a:int){
+    win{ STD_OUTPUT_HANDLE }               ; 函数体内也能写 win{...}
+    g=MB_OK                               ; 裸名字作赋值右值
+    r=crt_printf("hello win{...}\n")       ; 裸名字作函数调用（免声明 / 免顺序检查）
+    return r
+}
+
+def main(){
+    take(MB_ICONSTOP,IO_MODE)              ; 裸名字作调用参数
+    crt_printf("g=%d\n",g)
+    g=show(1)
+    r=win.crt_printf("still win.xxx\n")    ; 原来的 win.xxx 行为保持不变
+    LATER_CALL(0)                          ; 块写在文件后面也生效（见末尾）
+    return 0
+}
+
+win{ LATER_CALL }                          ; 后置块：解析完统一回填，前面的调用照样能用
+
+end main

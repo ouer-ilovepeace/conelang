@@ -1,0 +1,45 @@
+; cone 0.7 · equ 定义的宏立即数在 cone 侧直接展开，不再输出 MASM equ 伪指令
+BASE equ 16
+NBYTES equ BASE*2               ; 链式引用：先求 BASE，再求 NBYTES
+NOFFSET equ NBYTES+4               ; 多轮迭代
+LATER equ FORWARD+1             ; 前向引用同样可求值
+FORWARD equ 7
+HEXCODE equ 0C0000005h          ; hex 原文保留
+
+; 以下形态 cone 侧没有数值，仍保留 MASM 的 equ 行
+LIST equ 1,2,3                  ; 逗号列表
+RAW equ <win.crt_printf>        ; 尖括号原文
+ALIAS equ win.crt_printf        ; win. 别名
+print equ <win.crt_printf>      ; 函数别名（cone 侧可调用）
+
+buf byte [NBYTES]                 ; 数组长度处可直接写 equ 名
+loc byte [NOFFSET]
+
+def start(){
+    int x
+    int y
+    x=LATER                     ; 立即数展开
+    y=HEXCODE                   ; 0C0000005h 原样当立即数
+    asm{
+        mov eax,%NBYTES        ; -> mov eax,32（MASM 侧已无 NBYTES 符号）
+        mov ebx,%FORWARD        ; -> mov ebx,7
+        mov ecx,%HEXCODE        ; -> mov ecx,0C0000005h
+    }
+    match x{
+        BASE{}                  ; case 值里 equ 展开
+        LATER{}
+        default{}
+    }
+    try{
+        x=1
+    }
+    except HEXCODE{             ; ErrorType 里 equ 展开成 0C0000005h
+        x=2
+    }
+    except{
+        x=3
+    }
+    return 0
+}
+
+end start

@@ -1,0 +1,72 @@
+asm{
+    include raylib.inc
+    includelib raylibdll.lib
+}
+import os
+typedef void int
+void hInstance
+void hWnMain
+int WindowX=600
+int WindowY=800
+win.Texture sttQiao
+win.Texture sttNormal
+win.RenderTexture rdBase
+win.Shader shBase
+win.Vector2 MousePosition
+win.Vector3 RenderColor  ={1.0, 0.95, 0.8}
+win.LRectangle srcRd  ={0.0,0.0,600.0,-800.0}
+win.LRectangle dstRd  ={0.0,0.0,600.0,800.0}
+win.Vector2 origin  ={0.0,0.0}
+int pos_loc
+int light_loc
+int normal_loc
+def main(){
+    seek(0,12,0)    ;this is test
+    hInstance=win.GetModuleHandle(0)
+    win.SetConfigFlags(win.FLAG_WINDOW_TRANSPARENT | win.FLAG_WINDOW_TOPMOST)
+    win.InitWindow(WindowX,WindowY,"Cone")
+    win.SetTargetFPS(60)
+    hWnMain=win.GetWindowHandle()
+    win.LoadTexture(addr sttQiao,"desk_win.png")
+    win.LoadTexture(addr sttNormal,"desk_win_height.png")
+    win.LoadRenderTexture(addr rdBase,WindowX,WindowY)
+    ;//Shader Operation
+    win.LoadShader(0,"base.fs")
+    shBase.id=eax
+    shBase.locs=edx
+    pos_loc=win.GetShaderLocation(shBase,"lightPos")
+    light_loc=win.GetShaderLocation(shBase,"lightColor")
+    normal_loc=win.GetShaderLocation(shBase,"normalTex")
+    win.SetTextureWrap(sttNormal,win.TEXTURE_WRAP_CLAMP)
+    win.SetShaderValueTexture(shBase,normal_loc,sttNormal)
+    ;MousePosition.y=-300.0
+    ;MousePosition.x=-300.0
+    
+    for !(win.WindowShouldClose()){
+        win.SetShaderValue(shBase,pos_loc,addr MousePosition,win.SHADER_UNIFORM_VEC2)
+        win.GetMousePosition()
+        MousePosition.y=edx
+        MousePosition.x=eax
+        MousePosition.x=float(MousePosition.x)/WindowX
+        MousePosition.y=1.0-float(MousePosition.y)/WindowY
+        win.SetShaderValue(shBase,light_loc,addr win.RenderColor,win.SHADER_UNIFORM_VEC3)
+        
+        win.BeginTextureMode(rdBase)
+            win.DrawTexture(sttQiao,0,0,0ffffffffh)
+        win.EndTextureMode()
+        
+        win.BeginDrawing()
+            win.ClearBackground(0)
+            win.BeginShaderMode(shBase)
+                win.DrawTexturePro(rdBase.texture,win.srcRd,win.dstRd,win.origin,0,0ffffffffh)
+            win.EndShaderMode()
+        win.EndDrawing()
+    }
+    win.UnloadTexture(sttQiao)
+    win.UnloadTexture(sttNormal)
+    win.UnloadRenderTexture(rdBase)
+    win.UnloadShader(shBase)
+    win.RaylibCloseWindow()
+    return 0
+}
+end main

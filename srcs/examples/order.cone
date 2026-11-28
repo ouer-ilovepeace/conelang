@@ -1,0 +1,17 @@
+int x=-1
+func msgbox(:int,:int)
+
+def start(){
+	int y
+	y=2
+	if  x>y || x==y{
+		msgbox("x>=y","Cone")
+	}else{
+		msgbox("x<y","Cone")
+	}
+	return 0
+}def msgbox(cotent:int,caption:int)stdcall{
+	return win.MessageBoxA(0,cotent,caption,win.MB_OKCANCEL)
+}
+
+end start

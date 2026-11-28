@@ -1,0 +1,16 @@
+; cone 0.9.p：用户给的 import os64 样例回归（0.9.p 需求 1）
+import os64
+__link__ "/subsystem:console"
+def add$@?(x:int)export int {
+    x++
+    return x
+}
+def start(){
+	MessageBoxA(0,"Hi","Cone",0,12,13)
+	printf("Hello %s","Cone")
+	If 1{}
+	GetStdHandle(0,0)
+	exit()
+	return 0
+}
+end start

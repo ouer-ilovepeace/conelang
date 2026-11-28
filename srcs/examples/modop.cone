@@ -1,0 +1,24 @@
+; cone 0.9.1：% 取模运算符（整数专用，不允许浮点操作数）
+; 取模与 * / 同级；编译期常量由 cone 直接算成数字，运行期变量生成 div + edx。
+BASE equ 10
+MODV equ 17 % 5                  ; equ 里的 % 也由 cone 编译期求值（= 2）
+def start(){
+    int val1 = 17 % 5            ; 编译期折叠 -> 2
+    int val2 = 20
+    int val3 = val2 % 3          ; 运行期：div 后取 edx
+    int val4 = BASE * 2 % 7      ; 与 * 同级、左结合 -> 6
+    int val5 = 2 * 5 % 3 + 1    ; -> 2
+    int val6 = (1 + 2) * 3 % 4   ; -> 1
+    int val7 = MODV + 1          ; equ 宏 -> 3
+    f32 f1 = 1.0
+    f32 f2 = float(val1) / val2 + val2 % 3   ; 前面浮点除法没问题，后面整数取模也没问题
+    f32 f3 = float(val2 % 3)                 ; 整数取模结果再由 float() 送入 x87
+    int val8 = -11 % 4                      ; 与截断除法一致 -> -3
+    asm{
+        mov eax, (BASE mod 3)    ; asm{} 是 MASM 正文，cone 的 % 对应 MASM 的 mod
+        mov ebx, %val1
+        mov ecx, %MODV
+    }
+    return val1
+}
+end start

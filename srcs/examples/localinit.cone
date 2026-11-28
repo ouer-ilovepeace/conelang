@@ -1,0 +1,25 @@
+; cone 0.7 优化 · 需求 2：局部变量声明支持初值（多字节数组除外）
+; 初值可以是任意表达式（含 equ 立即数、形参、此前声明的局部变量、函数调用），
+; 赋值发射在「声明所在位置」，执行到此处才初始化；数组 buf byte[N] 仍不支持初值。
+BASE equ 40
+
+func helper(x:int)stdcall
+
+def calc(x:int)stdcall{
+    int a=x+1, b=BASE*2, z=0        ; 多变量各自初值，可引用形参 / equ
+    byte small=7                      ; byte 变量初值
+    word mid=BASE+1                   ; word 变量初值
+    int r=helper(a)+b                ; 初值里含函数调用
+    buf byte[4]                       ; 局部数组：不支持初值，保持原样
+    return a+b+z+small+mid+r
+}
+
+def start(){
+    int p=1, q=2
+    int r=p*q+10                      ; 初值引用此前声明的局部变量，走 imul/add
+    int s=r, t                       ; 有的带初值、有的不带
+    t=BASE
+    return calc(r)+s+t
+}
+
+end start

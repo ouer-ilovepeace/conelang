@@ -1,0 +1,45 @@
+include msvcrt
+
+; ============================================================
+; cone 0.5 release 综合示例：顶层 asm / const 字符串 / export / match
+; ============================================================
+
+; 顶层 asm：与 include 按源码顺序一起输出在头部区，正文原样进 MASM32
+asm{
+	; top-level asm passthrough (any position at file scope)
+	CONE_RELEASE_TAG equ <0500h>
+}
+
+const fmt:"Hello cone 0.5",0dh,0ah,0
+const greeting:"Release",0
+
+int @shared
+int shared
+
+func exported_add(:int,:int)stdcall export
+
+def exported_add(a:int,b:int)stdcall export{
+	int shared
+	shared=a+b
+	asm{
+		mov eax,%shared
+		test eax,eax
+	}
+	match shared{
+		0{ return 0 }
+		default{ return shared }
+	}
+	return 0
+}
+
+def start(){
+	int r
+	r=exported_add(1,2)
+	asm{
+		mov ebx,offset %fmt
+		mov ecx,CONE_RELEASE_TAG
+	}
+	return 0
+}
+
+end start

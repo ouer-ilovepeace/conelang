@@ -1,0 +1,22 @@
+include msvcrt
+
+; cone 0.6 · 需求 1 —— win.XXX 外部 MASM 结构体与普通 cone 结构体一样
+; 支持全局 ={...} 初始化列表（含 const / 空初始化 / 浮点项 / ? 占位）。
+; win 是 cone 关键字，类型的 MASM 名输出时自动去掉 win. 前缀。
+
+win.Vector3 RenderColor ={1.0,0.5,0.25}
+win.RECT rc ={0,0,100,50}
+const win.POINT origin ={0,0}
+win.POINT pt
+win.POINT blank ={}
+win.POINT partial ={7,?}
+
+int g
+
+def start(){
+	g=rc.left
+	g=win.SM_CXSCREEN
+	return 0
+}
+
+end start

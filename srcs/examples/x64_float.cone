@@ -1,0 +1,25 @@
+; -llvm:x64 回归：浮点全面（f32 / f64 / 字面量 / 算术 / 比较 / 结构体成员 / 形参返回）
+; x64 下 f32 -> float、f64 -> double；SSE 由 LLVM 按类型自动处理（XMM0~3 / XMM0 返回）。
+import x64crt
+fmt:"float: i=%d f=%d\n",0
+struct sample{ ratio f64  n int  small f32 }
+sample g={2.5,7,1.25}
+f64 pi=3.14
+def scale(v:f64, k:f64) f64{
+    return v*k
+}
+def main(){
+    f64 fv1=3.5
+    f32 fv2=1.25
+    f64 fv3=fv1*2.0+fv2
+    f64 fv4=scale(pi,2.0)
+    f64 fv5=g.ratio+fv3+fv4
+    int ii=fv5
+    int jj=g.small*4.0
+    if fv1>1.0{
+        ii=ii+1
+    }
+    printf(addr fmt, ii, jj)
+    return ii
+}
+end main

@@ -1,0 +1,27 @@
+; -llvm:x64 回归：结构体按 Windows x64 ABI 传参 / 隐藏 sret 返回
+; 1/2/4/8 字节结构体按值走整数寄存器；>8 字节按指针传；返回结构体走 sret。
+struct pt{ xx int  yy int }
+struct big{ aa int  bb int  cc int }
+pt gp={3,4}
+big gb={1,2,3}
+
+def sumpt(p:pt) int{
+    return p.xx+p.yy
+}
+def sumbig(q:big) int{
+    return q.aa+q.bb+q.cc
+}
+def mkbig() big{
+    return gb
+}
+def main(){
+    int a=sumpt(gp)
+    int b=sumbig(gb)
+    big cc=mkbig()
+    big d=gb
+    d=mkbig()
+    int e=cc.aa+d.cc
+    mkbig()
+    return a+b+e
+}
+end main

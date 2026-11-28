@@ -1,0 +1,53 @@
+; cone 0.6 fix3 · win{...} 块内名字同步支持 win 的全部用法
+;
+; 用户报的最小复现（原样）：
+;     import os
+;     win{ RECT MessageBoxA MB_OKCANCEL }
+;     def start(){ RECT rct  MessageBoxA(0,0,0,MB_OKCANCEL)  return 0 }
+;     end start
+; 曾经报「局部变量类型 RECT 未知」——fix2 的 win{} 只放行了常量 / 变量 /
+; 函数调用，没同步类型位置。本例把它扩成全场景回归：win 常量 / 变量 /
+; 函数调用 / 外部结构体类型 / 结构体常量 / 字段偏移 / 初始化列表。
+
+import os
+win{
+    RECT
+    MessageBoxA
+    MB_OKCANCEL
+    SAME                  ; 与 cone struct 同名：cone 名字优先，见下
+}
+
+RECT gr                          ; 全局外部结构体变量
+RECT grc ={0,0,640,480}         ; 全局 ={...} 初始化列表
+int lpst
+int cell
+
+struct Holder{ box RECT  n int }  ; struct 成员类型用裸 win 名字
+struct SAME{ v int }              ; cone 自己的 struct，与 win{} 里的 SAME 同名
+
+func take_proto(:RECT)stdcall     ; PROTO 形参类型
+
+def take_rect(r:RECT){            ; def 形参类型
+    RECT lr                      ; 局部变量类型
+    lr=r
+    return 0
+}
+
+def start(){
+    RECT rct                     ; 局部变量类型（bug 复现点）
+    rct.left=0                   ; 外部结构体成员读写（字段交给 MASM 校验）
+    MessageBoxA(0,0,0,MB_OKCANCEL)     ; 裸名字函数调用 + 裸 win 常量作参数
+    take_rect(RECT{0,0,1,1})           ; 裸名字结构体常量按值传
+    take_rect(addr RECT{2,3,4,5})      ; addr 取隐名标签地址
+    lpst=addr gr
+    cell=[int lpst+RECT.left]          ; 裸名字字段偏移常量（[] 地址表达式）
+    SAME sv                           ; 同名时 cone struct 优先
+    sv.v=3
+    cell=sv.v
+    cell=MB_OKCANCEL                   ; 裸 win 常量作右值
+    LATE_TYPE late                     ; 后置块的名字也能当类型（全文件生效）
+    return 0
+}
+
+win{ LATE_TYPE }                      ; 写在文件末尾也生效（解析前预扫描）
+end start

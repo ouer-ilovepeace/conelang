@@ -1,0 +1,17 @@
+; cone 0.9.b -llvm:x64 回归：嵌套 / align 结构体 + 成员偏移立即数
+include msvcrt
+import x64crt
+struct inner{ aa byte  bb int }
+struct outer align{ xx byte  sub2 inner  zz word }
+outer g={1,2,3}
+fmt:"o=%d n=%d\n",0
+def main(){
+    inner loc
+    loc.aa=9
+    loc.bb=sizeof(outer)
+    g.sub2.bb = loc.bb
+    g.zz = outer.zz
+    printf(addr fmt, g.sub2.bb, sizeof(outer))
+    return 0
+}
+end main

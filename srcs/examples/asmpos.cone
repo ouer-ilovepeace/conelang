@@ -1,0 +1,29 @@
+; cone 0.6 · 需求 4 —— 函数体外的 asm{...} 插入到它的源码所在位置，
+; 不再一律置顶到 include 之后。三个块分别落在：
+;   ① 所有声明之前  ② 两个数据声明之间  ③ 两个函数之间
+
+asm{
+	; TOP-LEVEL ASM BEFORE ANY OTHER DECL
+	CONE_TAG_0 equ <100h>
+}
+
+include msvcrt
+int a
+asm{
+	; BETWEEN TWO DATA DECLARATIONS
+	CONE_TAG_1 equ <101h>
+}
+int b
+
+def f(x:int){
+	return x
+}
+asm{
+	; BETWEEN TWO FUNCTIONS
+	CONE_TAG_2 equ <102h>
+}
+def start(){
+	return 0
+}
+
+end start

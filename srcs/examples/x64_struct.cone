@@ -1,0 +1,14 @@
+; cone 0.9.b -llvm:x64 回归：结构体 + 成员读写 + 初值列表 + sizeof
+include msvcrt
+import x64crt
+struct pt{ x int  y int }
+pt p={3,4}
+fmt:"x=%d y=%d n=%d",0dh,0ah,0
+def main(){
+    int a
+    a = p.x
+    p.y = a + sizeof(pt)
+    printf(addr fmt, p.x, p.y, sizeof(pt))
+    return 0
+}
+end main

@@ -1,0 +1,23 @@
+; cone 0.9.1：加强编译期计算
+; 纯 cone 立即数（数值 / equ / sizeof / 位运算）构成的表达式子树直接折叠成数字；
+; win 块符号 / $ / addr / 变量 / 调用 / 浮点不参与 cone 编译期计算，原样交给 MASM32。
+BASE equ 10
+OFF equ BASE * 2 + 3
+BMASK equ 1 << 4 | 3
+MODV equ 17 % 5
+struct xy{ xx int  yy int }
+xy gxy={}
+def start(){
+    int val1 = BASE * 2 + 3       ; -> 23
+    int val2 = BMASK               ; -> 19
+    int val3 = MODV               ; -> 2
+    int val4 = sizeof(xy) * 2 + 1 ; -> 17
+    buf byte[OFF]                 ; 数组维度 = 23
+    grid word[MODV + 3]           ; 数组维度 = 5
+    int val5 = (BASE + 2) * (OFF - 20)   ; 12 * 3 = 36
+    int val6 = ~0 & 0FFh          ; -> 255
+    int val7 = gxy.xx + 1         ; 含变量：不折叠，交给运行期
+    int val8 = sizeof(xy) % 3     ; 8 % 3 = 2
+    return val1
+}
+end start

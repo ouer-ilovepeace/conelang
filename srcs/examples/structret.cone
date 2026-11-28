@@ -1,0 +1,44 @@
+; cone 0.9.1：return 结构体 / return float(xxx) 的 Windows x86 ABI
+; <=4 字节结构体 -> eax；8 字节 -> edx:eax；>8 字节（未声明返回类型）-> 结构体指针
+; return float(xxx) -> st(0) 返回，并同步送入 eax（f64 时 edx:eax）
+struct tiny{ aa byte  bb byte }      ; 2 字节
+struct quad{ xx int }                ; 4 字节
+struct pair{ p1 int  p2 int }        ; 8 字节
+struct big{ m1 int  m2 int  m3 int } ; 12 字节
+tiny gtiny={}
+quad gquad={}
+pair gpair={}
+big gbig={}
+f64 fbig=1.5
+def rtiny(){
+    return gtiny
+}
+def rquad(){
+    return gquad
+}
+def rpair(){
+    return gpair
+}
+def rbig(){
+    return gbig
+}
+def rmem(){
+    return gpair.p2                  ; return 结构体成员保持原语义
+}
+def rf(){
+    return float(3)              ; st(0) + eax
+}
+def rf8(){
+    return float(fbig)           ; st(0) + edx:eax
+}
+def start(){
+    rtiny()
+    rquad()
+    rpair()
+    rbig()
+    rmem()
+    rf()
+    rf8()
+    return 0
+}
+end start

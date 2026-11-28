@@ -1,0 +1,12 @@
+; cone 0.9.b -llvm:x64 回归：import std 源码级展开（纯计算模块）
+include msvcrt
+import x64lib
+import x64crt
+fmt:"r=%d\n",0
+def main(){
+    int a = x64lib_add(3,4)
+    int b = x64lib_twice(a)
+    printf(addr fmt, x64lib_sum3(a,b,1))
+    return 0
+}
+end main

@@ -1,0 +1,16 @@
+; cone 0.8prelease · include 语法规范化（三种形态）
+; 1) include xxx      -> include xxx.inc + includelib xxx.lib
+; 2) include xxx.yyy  -> include xxx.yyy（后缀不是 lib，只生成 include 行）
+; 3) include xxx.lib  -> includelib xxx.lib（只生成 includelib 行）
+; 固定头（windows/kernel32/user32）与这三条走同一套路径策略：
+;   默认无 -s 写 cone 安装目录全路径且不带引号；-s 写短名。
+include msvcrt
+include extra.inc
+include mylib.lib
+include os.lib
+
+def start(){
+    return 0
+}
+
+end start

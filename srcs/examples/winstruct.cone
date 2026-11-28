@@ -1,0 +1,29 @@
+include msvcrt
+
+; win.XXX = MASM32 / windows.inc 里已定义的结构体类型
+; cone 侧不生成 STRUCT、不校验成员名，输出时去掉 win. 前缀
+struct holder{
+	rc win.RECT
+	n int
+}
+
+win.RECT globalrc
+
+def showrc(r:win.RECT)stdcall{
+	return r.left
+}
+
+def start(){
+	win.RECT localrc
+	int p
+	holder h
+	localrc.left=10
+	localrc.right=20
+	h.rc.left=7		; 嵌套：cone 结构体里嵌外部结构体
+	p=showrc(globalrc)	; 按值传外部结构体变量
+	p=addr globalrc
+	eax=[int p+win.RECT.left]	; 外部类型字段偏移 -> RECT.left
+	return 0
+}
+
+end start

@@ -1,0 +1,17 @@
+; cone 0.84：try} 与 except 之间允许夹普通语句（不能跨函数 / 跨段）
+include kernel32
+
+def start(){
+    int i=0
+    try{
+        i=1
+    }
+    i=i+1          ; 间隔语句：仍在默认 SEH 帧保护下、正常路径执行
+    asm{nop}
+    except 0C0000094h{
+        i=99
+    }
+    return 0
+}
+
+end start

@@ -1,0 +1,44 @@
+; cone 0.7 · Windows x86 栈式 SEH（fs:[0] 帧链）
+; cone 侧数值 equ 会直接展开成立即数，不再生成 MASM 的 equ 行。
+EXCEPTION_ACCESS_VIOLATION equ 0C0000005h
+EXCEPTION_INT_DIVIDE_BY_ZERO equ 0C0000094h
+EXCEPTION_STACK_OVERFLOW equ 0C00000FDh
+
+int slot
+msg:"in guarded block",0dh,0ah,0
+
+func risky(:int)stdcall
+
+def guard(x:int)stdcall{
+    int r
+    try{
+        risky(x)
+        r=eax
+        ; 嵌套 try：内层帧挂在当前 fs:[0] 之上，各自独立
+        try{
+            risky(r)
+        }
+        except EXCEPTION_STACK_OVERFLOW{
+            r=-4
+        }
+    }
+    except EXCEPTION_INT_DIVIDE_BY_ZERO{
+        r=-1
+    }
+    except EXCEPTION_ACCESS_VIOLATION{
+        r=-2
+    }
+    except{
+        r=-3                 ; 不带 ErrorType：兜底匹配所有错误码，必须是最后一个
+    }
+    return r
+}
+
+def start(){
+    slot=guard(7)
+    ; win.* 仍免声明；数值 equ 可直接当立即数用
+    win.crt_printf(addr msg)
+    return 0
+}
+
+end start

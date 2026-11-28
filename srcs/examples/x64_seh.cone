@@ -1,0 +1,66 @@
+; -llvm:x64 回归：Windows x64 SEH try/except
+; 多错误码 / 通配分支 / 嵌套 try / funclet 内 return / 循环 break-continue /
+; 保留变量 fuck 读异常码 / except 处理器内调用。
+EXCEPTION_INT_DIVIDE_BY_ZERO equ 0C0000094h
+EXCEPTION_ACCESS_VIOLATION equ 0C0000005h
+msg:"code=%d r=%d\n",0
+import x64crt
+func risky(:int) c int
+
+def guard(x:int) int{
+    int r=0
+    try{
+        r=risky(x)
+        try{
+            r=r+1
+        }
+        except EXCEPTION_ACCESS_VIOLATION{
+            r=-4
+        }
+    }
+    except EXCEPTION_INT_DIVIDE_BY_ZERO{
+        r=-1
+    }
+    except{
+        r=-3+fuck
+    }
+    return r
+}
+
+def loopcase() int{
+    int i=0
+    int r=0
+    for i<3{
+        try{
+            r=r+1
+            if i==1{
+                continue
+            }
+            r=r+10
+        }
+        except{
+            r=r+100
+            break
+        }
+        i++
+    }
+    return r
+}
+
+def retcase() int{
+    try{
+        return 7
+    }
+    except{
+        return 9
+    }
+}
+
+def main(){
+    int a=guard(1)
+    int b=loopcase()
+    int cc=retcase()
+    printf(addr msg, a, b+cc)
+    return 0
+}
+end main

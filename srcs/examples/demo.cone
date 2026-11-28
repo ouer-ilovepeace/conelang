@@ -1,0 +1,34 @@
+include os.lib
+typedef void int
+func print(:void)stdcall
+
+hello:"hello world!",0,0,-11,0dh,0ah
+int a=1
+byte b
+int d=1+2*4-1/3
+const f32 g=1.2
+output byte [128]
+
+def adds(x:int,y:int)stdcall{
+	return x+y
+}
+
+def start(){
+	int x,y
+	int result
+	f32 z
+	fmt:"Windows Ver:%d.%d"
+	result=adds(x,y)
+	x=10
+	y=x-10
+	z=x/y
+	z=z*1.0
+	win.wsprintf(addr output,addr fmt,x,y)
+	os.print(addr hello)
+	os.print(addr output)
+	print(addr z)
+	;this is not inculede in source
+	return 0
+}
+
+end start

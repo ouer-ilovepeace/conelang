@@ -1,0 +1,19 @@
+; cone 0.9.b -llvm:x64 回归：export（def 上写 export -> define dllexport）
+; llc 会把 dllexport 写进 COFF .drectve 的 /EXPORT，lld-link 直接产出导出表。
+; 链接成 .dll 时可用 dumpbin /exports 看到 exported_add / exported_scale。
+import x64crt
+fmt:"export: v=%d\n",0
+def exported_add(a:int,b:int) export int{
+    return a+b
+}
+def exported_scale(v:f64) export f64{
+    return v*2.0
+}
+def main(){
+    int r=exported_add(20,22)
+    f64 q=exported_scale(1.5)
+    int i=q
+    printf(addr fmt, r+i)
+    return r
+}
+end main

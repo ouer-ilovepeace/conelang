@@ -1,0 +1,51 @@
+; cone 0.9.p x64 标准库 —— os64：Win32 / CRT 常用函数声明（与 std/os64.cone 同源副本，供源码目录就近 import）
+;
+; 用法：在 .cone 顶部写 `import os64`。
+; x64 下 cone 依据 func/def 原型检查调用参数个数；标 `:vararg` 的声明
+; 跳过个数检查（conex64 只支持在【声明】里写 :vararg，def 定义写 :vararg 会报错）。
+;
+; 口径：x64 统一 Windows x64 ABI；c / stdcall 都不产生符号修饰，链接符号即裸名。
+; 每个声明都写明返回类型；:vararg 必须是参数表最后一项。
+; 链接时仍需 -addl[/libpath:...] 或系统 LIB 提供 msvcrt.lib / kernel32.lib /
+; user32.lib（CRT 不固化，本模块只做声明）。
+
+; ---- CRT：控制台 / 字符串（真正的变参函数）----
+func printf(:long,:vararg) c int
+func puts(:long,:vararg) c int
+func sprintf(:long,:vararg) c int
+func strlen(:long,:vararg) c int
+func wsprintfA(:long,:vararg) c int
+func malloc(:long,:vararg) c long
+func free(:long,:vararg) c int
+func exit(:vararg) c int
+
+; ---- kernel32：进程 / 控制台（宽松原型：额外实参走 :vararg）----
+func GetStdHandle(:long,:vararg) c long
+func WriteFile(:long,:long,:long,:long,:long,:vararg) c int
+func ReadFile(:long,:long,:long,:long,:long,:vararg) c int
+func ExitProcess(:long,:vararg) c int
+func GetLastError(:vararg) c int
+func Sleep(:long,:vararg) c int
+func VirtualAlloc(:long,:long,:long,:long,:vararg) c long
+func VirtualFree(:long,:long,:long,:vararg) c int
+
+; ---- user32：消息框（4 个固定形参 + :vararg 允许额外实参）----
+func MessageBoxA(:long,:long,:long,:long,:vararg) c int
+func MessageBoxW(:long,:long,:long,:long,:vararg) c int
+
+; ---- 常用常量 ----
+NULL equ 0
+TRUE equ 1
+FALSE equ 0
+MB_OK equ 0
+MB_OKCANCEL equ 1
+MB_ICONERROR equ 16
+STD_OUTPUT_HANDLE equ 4294967285
+STD_INPUT_HANDLE equ 4294967290
+INVALID_HANDLE_VALUE equ 4294967295
+GENERIC_READ equ 2147483648
+GENERIC_WRITE equ 1073741824
+PAGE_READWRITE equ 4
+MEM_COMMIT equ 4096
+MEM_RESERVE equ 8192
+MEM_RELEASE equ 32768

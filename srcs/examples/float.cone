@@ -1,0 +1,29 @@
+include msvcrt
+
+; cone 0.6 · 需求 3 —— float(...) 关键字
+; 被 float 括起的内容需要浮点载入时一律 fld（浮点位），否则默认 fild（整数）。
+; 右值出现 float 关键字或浮点字面量即走 x87；float 指定的内容用浮点运算，
+; 包括内存形式的 fadd/fsub/fmul/fdiv 与反向 fsubr/fdivr（绝不误用 fiadd/fidiv）。
+
+struct MousePos{ x f32  y f32 }
+MousePos MousePosition
+int WindowX
+f32 ratio
+
+def start(){
+	; 用户原始问题：MousePosition.x*1.0/WindowX 把 f32 成员当 dword 做了 fild
+	MousePosition.x=float(MousePosition.x)*1.0/WindowX
+	; 不 load 右操作数，直接浮点除法 fdiv dword ptr MousePosition.x
+	MousePosition.x=WindowX/float(MousePosition.x)
+	; 反向除法 fdivr：st(0)=MousePosition.x/WindowX
+	MousePosition.x=float(MousePosition.x)/WindowX
+	; float 成员 + 整数复合右值
+	MousePosition.y=float(MousePosition.y)+WindowX/2
+	; float(int 变量)：按原始 4 字节位当 REAL4 载入
+	ratio=float(WindowX)+2.5
+	; float(整数字面量) 进 REAL4 常量池，结果写回 int 用 fistp
+	WindowX=float(5)/2
+	return 0
+}
+
+end start

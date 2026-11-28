@@ -1,0 +1,33 @@
+; cone 0.9.b -llvm:x64 回归：if/elseif/else + for/break/continue + match + 数组
+include msvcrt
+import x64crt
+int total=0
+buf int[8]
+fmt:"v=%d\n",0
+def main(){
+    int i=0
+    for i<8{
+        if i==2{
+            continue
+        }
+        if i==6{
+            break
+        }
+        [int buf + i*4] = i
+        if i<3{
+            total=total+i
+        }elseif i==4{
+            total=total+10
+        }else{
+            total=total+1
+        }
+    }
+    match total{
+        0{ total=100 }
+        1{ total=101 }
+        default{ total=total }
+    }
+    printf(addr fmt, [int buf + 3*4])
+    return total
+}
+end main

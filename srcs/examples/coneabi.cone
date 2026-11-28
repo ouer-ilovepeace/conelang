@@ -1,0 +1,31 @@
+; cone 0.9.2 coneABI：函数返回结构体 = 调用者传「接收结构体指针」作隐式首参，
+; 被调方 return 结构体时把内容完整拷贝到该指针指向的、由调用者管理的内存。
+; 不再有静态中转缓冲，也不再有调用后的二次拷贝。结构体类型必须一致（故大小一致）。
+struct big{ aa int  bb int  cc int }       ; 12 字节
+struct pt{ xx int  yy int }                ; 8 字节
+struct q align{ a byte  b int  z byte }    ; align -> 12 字节（含 padding）
+big gbig={}
+big dstbig={}
+pt gpt={}
+q gq={1,2,3}
+func mkbig()stdcall big
+func mkpt() pt
+func mkq() q
+def mkbig()stdcall big{
+    return gbig
+}
+def mkpt() pt{
+    return gpt
+}
+def mkq() q{
+    return gq
+}
+def start(){
+    dstbig = mkbig()          ; 全局接收：invoke mkbig, offset dstbig
+    big p2 = mkbig()          ; 局部接收：invoke mkbig, addr p2
+    pt p3 = mkpt()            ; 8 字节结构体同样走 coneABI 隐藏指针
+    q dstq = mkq()              ; align 结构体：按含 padding 的正确 size 完整拷贝
+    mkbig()                   ; 裸调用：栈上临时接收区，指针传入后回收
+    return 0
+}
+end start

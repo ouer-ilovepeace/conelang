@@ -1,0 +1,80 @@
+include mylib
+include os.lib
+
+; equ 两种形态 + win.xxx 别名（cone 侧也登记为可调用符号）
+MAX equ 100
+CRLF equ 0dh,0ah
+SUM equ 1+2*3
+TEXT equ <1+2*3,0dh,0ah>
+print equ <win.crt_printf>
+
+hello:"hello world!",0
+fmt:"abcdefghijk"
+
+func putw(:word)stdcall
+func putb(:byte)stdcall
+func takesptr(:int)stdcall
+
+def getidx()stdcall{
+	return 2
+}
+
+def getw()stdcall{
+	word w
+	return ax
+}
+
+def start(){
+	int r
+	int p
+	word w
+	byte b
+	buf byte [64]
+
+	; ---- 1. 寄存器作左值 / 表达式 / 参数 ----
+	eax=5                       ;mov eax, 5
+	ebx=eax                     ;mov ebx, eax  （不发 mov eax,eax）
+	ecx=fmt                     ;mov ecx, dword ptr [fmt]  —— reg=mem
+	ax=bx                       ;mov ax, bx    —— 16 位
+	al=5                        ;mov al, 5     —— 8 位
+	si=ds                       ;mov si, ds    —— 段寄存器
+	b=al                        ;mov b, al
+	w=ax                        ;mov w, ax
+	win.takesptr(eax)           ;invoke takesptr, eax
+	win.takesptr(al)            ;movzx ebx, al / invoke takesptr, ebx
+
+	; ---- 2. 寄存器分配优化：不再 push/pop ----
+	eax=addr hello+11           ;mov eax, offset hello / add eax, 11
+	ecx=addr fmt-4              ;mov ecx, offset fmt / sub ecx, 4
+	ebx=r+1                     ;mov ebx, r / add ebx, 1（直接求到目标寄存器）
+	edx=eax*2                   ;imul edx, ... 直接求到 edx
+	r=eax+1                     ;add eax, 1 / mov r, eax（结果已在 eax）
+	eax=eax-1                   ;sub eax, 1（结果已在目标寄存器，无 mov）
+
+	; ---- 3. [] 与 MASM32 一致：type ptr [addr]，一步访问 ----
+	[byte fmt+4]=65             ;mov byte ptr [fmt+4], 65（立即数直写）
+	[word fmt]=ax               ;mov word ptr [fmt], ax（寄存器直写）
+	[byte fmt+4]=b              ;movzx ebx, b / mov byte ptr [fmt+4], bl（mem->mem 中转）
+	[dword fmt]=r               ;mov ebx, r / mov dword ptr [fmt], ebx
+	[word buf+eax*2+8]=w        ;地址里含寄存器
+	[dword fmt+getidx()*4+8]=r  ;地址含 call：右值先求进 ebx，call 占 eax 不冲突
+	r=[dword fmt]               ;mov eax, dword ptr [fmt] / mov r, eax
+	w=[word fmt]                ;movzx eax, word ptr [fmt] / mov w, ax
+	win.takesptr([dword fmt])   ;mov ebx, dword ptr [fmt] / invoke takesptr, ebx
+
+	; ---- 4. 显式解引用：cone 代码自己取指针再 [type reg] ----
+	p=addr hello                ;mov eax, offset hello / mov p, eax
+	eax=p                       ;mov eax, p
+	[byte eax]=65               ;mov byte ptr [eax], 65
+
+	; ---- 5. addr / 调用 / 别名 回归 ----
+	win.takesptr(eax,addr buf)  ;mov ebx, eax / lea esi, buf / invoke takesptr, ebx, esi
+	win.takesptr(getidx(),addr buf)
+	os.putw(w)
+	os.putb(b)
+	print(addr fmt)
+	print(eax, addr fmt)
+	win.MessageBox(0,addr fmt,addr fmt,0)
+	return 0
+}
+end start

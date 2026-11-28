@@ -1,0 +1,19 @@
+; cone 0.9.3：efunc —— 只在 cone 侧声明 MASM32 侧已有的函数
+; 背景：msvcrt.inc 已经提供了 crt_malloc / crt_strlen 的 PROTO 声明，
+; 若用 `func crt_malloc` 会再生成一条 `crt_malloc proto C` 导致符号重定义。
+; `efunc` 与 `func` 语法完全一致（参数 / 调用约定 / export / 返回类型），
+; 区别只在：cone 侧照样登记签名与返回类型以约束调用与接收，
+; 但【不向 MASM 侧输出任何 PROTO 行】，交给 .inc 提供。
+include msvcrt
+efunc crt_malloc(:int)C int
+efunc crt_strlen(:int)C int
+malloc equ crt_malloc
+strlen equ crt_strlen
+def start(){
+    int p1 = crt_malloc(16)
+    int p2 = malloc(32)
+    int n1 = crt_strlen(p1)
+    int n2 = strlen(p2)
+    return p1
+}
+end start

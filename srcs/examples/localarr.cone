@@ -1,0 +1,23 @@
+include os.lib
+typedef void int
+func print(:void)stdcall
+msg:"hi",0
+fmt:"global",0
+
+def dump(p:int,q:int)stdcall{
+	fmt byte [32]
+	buf byte [16]
+	; 两个 addr 栈上变量 -> 分配 ebx / esi，绝不用 eax
+	win.wsprintf(addr fmt,addr buf,p,q)
+	; addr 形参 -> lea；addr 全局 -> offset
+	os.print(addr p)
+	os.print(addr msg)
+	; 含表达式参数 + addr 参数 -> 手工逆序 push，eax 不会被 lea 覆盖
+	print(1+2,addr fmt)
+	return p
+}
+
+def start(){
+	return dump(1,2)
+}
+end start

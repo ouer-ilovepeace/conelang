@@ -1,0 +1,47 @@
+; cone 0.7 优化 · 需求 1：带运算的 condition 生成真正的计算指令
+; MASM 的 .if / .while 只在汇编期对常量求值，遇到运行时变量 i*i / i/n
+; 会展开成非法的 `.if (i*i)<123`；cone 现在自动降级成显式计算 + cmp + jcc。
+; 只有简单 condition（比较 / 逻辑 / 单值）才保留几乎原样的 MASM 伪指令。
+int i
+int n
+int acc
+
+def start(){
+    i=12
+    n=2
+    acc=0
+    ; ① 乘法条件：降级为 imul + cmp + jcc（整条 if 链一起降级）
+    if i*i<123{
+        acc=1
+    }
+    elseif i*i+acc>=200{
+        acc=2
+    }
+    else{
+        acc=3
+    }
+    ; ② 除法条件：for 每轮在 cond 标签重新算 idiv，不能复用循环外的旧值
+    for i/n>3{
+        i=i-1
+    }
+    ; ③ 位运算 / 移位 / 一元负号同样降级
+    if (i&3)==2{
+        acc=acc+1
+    }
+    if (i<<1)>8{
+        acc=acc+1
+    }
+    if -i<0{
+        acc=acc+1
+    }
+    ; ④ 简单条件对照：仍保留 MASM 的 .if 伪指令
+    if i==6{
+        acc=acc+10
+    }
+    if acc>20 && i!=0{
+        acc=acc+100
+    }
+    return acc
+}
+
+end start

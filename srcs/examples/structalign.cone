@@ -1,0 +1,53 @@
+; cone 0.9prelease：align 结构体尾部 padding / 嵌套 align / 成员偏移立即数回归
+include msvcrt
+
+struct tail align{
+    a int       ; off 0
+    b byte      ; off 4
+}               ; 累计 5 -> 尾 padding 3 -> size 8（max align 4）
+
+struct outer align{
+    x byte      ; off 0
+    inner tail  ; off 4（前插 3 padding；tail align=4 size=8）
+    z word      ; off 12
+}               ; 累计 14 -> 尾 padding 2 -> size 16（max align 4）
+
+struct plain{
+    p byte
+    q int       ; 非 align：off 1，无 padding，size 5
+}
+
+TAIL_SIZE equ sizeof(tail)          ; 8
+INNER_B   equ outer.inner.b + 1     ; 8 + 1 = 9
+
+tail g1={}
+outer g2={}
+
+def start(){
+    int s1 = sizeof(tail)       ; 8
+    int s2 = sizeof(outer)      ; 16
+    int s3 = sizeof(plain)      ; 5
+    int o1 = tail.b             ; 4
+    int o2 = outer.inner.a      ; 4（inner@4 + a@0）
+    int o3 = outer.inner.b      ; 8（inner@4 + b@4）
+    int o4 = outer.z            ; 12
+    int o5 = plain.q            ; 1（非 align 无 padding）
+    int e1 = TAIL_SIZE
+    int e2 = INNER_B
+    arr byte[sizeof(outer)]      ; 数组维度用 cone 立即数（16）
+    asm{
+        mov eax, tail.b
+        mov ebx, sizeof(outer)
+        mov ecx, %outer.inner.b
+        mov edx, %sizeof(tail)
+    }
+    asm64{
+        mov eax, outer.z
+        add eax, sizeof(plain)
+        mov ecx, tail.b
+        syscall
+    }
+    return 0
+}
+
+end start

@@ -1,0 +1,60 @@
+include msvcrt
+
+; cone 0.5：match / default（V match 语义：无 fallthrough，default 可选且必须在最后）
+ONE equ <1>
+TWO equ <2>
+int g
+int slot
+
+def test_default(x:int)stdcall{
+	match x{
+		0{ slot=100 }
+		ONE{ slot=101 }
+		TWO{ slot=102 }
+		1+2{ slot=103 }
+		-1{ slot=104 }
+		0dh{ slot=105 }
+		default{ slot=999 }
+	}
+	return slot
+}
+
+def test_no_default(x:int)stdcall{
+	match x{
+		7{ return 70 }
+		8{ return 80 }
+	}
+	return 0
+}
+
+def test_return_tail(x:int)stdcall{
+	match x{
+		7{ return 77 }
+		default{ return 88 }
+	}
+	return 0
+}
+
+def test_nested(x:int,y:int)stdcall{
+	match x{
+		1{
+			match y{
+				1{ return 11 }
+				default{ return 19 }
+			}
+		}
+		default{ return 0 }
+	}
+	return 0
+}
+
+def start(){
+	g=3
+	slot=test_default(g)
+	slot=test_no_default(7)
+	slot=test_return_tail(9)
+	slot=test_nested(1,1)
+	return 0
+}
+
+end start

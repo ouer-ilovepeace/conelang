@@ -1,0 +1,19 @@
+include msvcrt
+
+; cone 0.6 · 需求 3 补充 —— 浮点复合表达式作调用参数。
+; MASM 的 invoke 参数表塞不进 x87 求值，自动改走手工逆序压栈
+; （求值到 st(0) 后 sub esp,4 / fstp dword ptr [esp]）。
+
+struct Pos{ x f32  y f32 }
+Pos p
+int WindowX
+func sink(:f32)
+
+def start(){
+	sink(float(p.x)/WindowX)
+	sink(WindowX/float(p.x))
+	sink(float(p.x)*1.0+WindowX)
+	return 0
+}
+
+end start

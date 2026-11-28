@@ -1,0 +1,25 @@
+; cone 0.9.2：align 结构体初始化列表必须按 MASM 字段顺序展开
+; xy 的 MASM 定义被 cone 插入了 _padding_0 / _padding_1：
+;   xy struct
+;       x WORD ?
+;       _padding_0 BYTE 2 dup(?)
+;       y DWORD ?
+;       z BYTE ?
+;       _padding_1 BYTE 3 dup(?)
+;   xy ends
+; 因此 {1,2,3} 必须生成 <1,<>,2,3>（中间 padding 用 <> 占位），
+; 否则 2 会错位写到 _padding_0 上。结构体常量同理。
+struct xy align{
+    x word
+    y int
+    z byte
+}
+xy lalala ={1,2,3}
+xy onlytwo ={7,8}
+xy nothing ={}
+func show(:xy)
+def start(){
+    show(xy{4,5,6})
+    return 0
+}
+end start

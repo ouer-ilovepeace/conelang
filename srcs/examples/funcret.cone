@@ -1,0 +1,29 @@
+; cone 0.9.1：func 声明 / def 定义尾部可选返回类型
+; 标量返回：接收变量尺寸必须一致，被调方按 coneABI 扩展到 edx:eax（<8 字节警告）
+; >8 字节结构体返回：第一个隐式参数传结构体指针，调用后逐成员复制回目标
+struct big{ aa int  bb int  cc int }   ; 12 字节
+struct pt{ xx int  yy int }            ; 8 字节
+big gbig={}
+big dstbig={}
+pt gpt={}
+func mkbig()stdcall big
+func getval()stdcall long
+func mkpt() pt
+def mkbig()stdcall big{
+    return gbig
+}
+def getval()stdcall long{
+    return 1
+}
+def mkpt() pt{
+    return gpt
+}
+def start(){
+    dstbig = mkbig()              ; 赋值接收：调用后复制缓冲
+    big p2 = mkbig()              ; 声明初值接收：同样复制
+    long v1 = getval()            ; 8 字节标量：edx:eax 接收
+    pt p3 = mkpt()                ; 8 字节结构体：edx:eax 接收
+    mkbig()                       ; 裸调用：只压隐藏指针
+    return 0
+}
+end start

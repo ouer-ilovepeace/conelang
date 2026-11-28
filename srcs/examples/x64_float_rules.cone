@@ -1,0 +1,16 @@
+; -llvm:x64 回归：浮点舍入 / 混合运算 / 转换
+; 规则详见 conex64.txt 第 8 节
+import x64crt
+fmt:"ii=%d jj=%d s=%d\n",0
+def main(){
+    f64 fv1=3.5
+    f32 fv2=1.25
+    f64 fv3=fv1*2.0+fv2      ; f32 提升成 double 再算
+    f64 fv4=3.9
+    int ii=fv4               ; fptosi 向零截断 -> 3
+    f32 small=fv3            ; fptrunc double -> float
+    int jj=small*4.0         ; 浮点*字面量 -> double -> fptosi
+    printf(addr fmt, ii, jj, sizeof(fv3))
+    return 0
+}
+end main

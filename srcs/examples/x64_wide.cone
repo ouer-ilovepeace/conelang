@@ -1,0 +1,15 @@
+; -llvm:x64 回归：w"..." 宽字符串（UTF-16LE）
+; 数据定义 / 表达式字面量 / 非 ASCII / 转义 / sizeof 全场景。
+include user32
+import x64crt
+func MessageBoxW(:long,:long,:long,:long) c int
+wcap:w"Cone 标题"
+wmsg:w"Hello, 世界!\n第二行"
+fmt:"wcap=%d wmsg=%d\n",0
+
+def main(){
+    MessageBoxW(0, w"Hello, 世界!", addr wcap, 0)
+    printf(addr fmt, sizeof(wcap), sizeof(wmsg))
+    return 0
+}
+end main

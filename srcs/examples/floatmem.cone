@@ -1,0 +1,27 @@
+include msvcrt
+
+; 浮点成员 + 嵌套：用户给的最小复现
+struct mosk{
+	x f32
+	y f32
+}
+struct loser{
+	who mosk
+}
+
+f32 glob
+buf byte[32]
+
+def start(){
+	loser ru
+	ru.who.x=1.0		; 结构体成员作浮点左值 -> fld / fstp
+	ru.who.y=2.5
+	[dword buf]=3.5		; [] 内存作浮点左值
+	[real8 buf+8]=4.5	; 8 字节浮点目标 -> fstp qword ptr
+	glob=5.5			; 普通标量浮点赋值（回归）
+	ru.who.x=glob		; f32 变量右值
+	ru.who.y=ru.who.x*2.0	; 复合浮点表达式，成员作操作数
+	return 0			; invoke ExitProcess,0
+}
+
+end start

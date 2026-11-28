@@ -1,0 +1,10 @@
+include os.lib
+typedef void int
+func print(:void)stdcall
+hello:"hello world!",0
+def start(){
+	os.print(addr hello)
+	;this is not inculede in source
+	return 0
+}
+end start

@@ -1,0 +1,18 @@
+; cone 0.83 defined 宏函数（无 exitm）→ MASM32 macro / endm
+defined PUSHALL(){
+	pushad
+	mov eax, 1
+	popad
+}
+defined ADD2(a:req,b:vararg){
+	add a, b
+}
+
+def start(){
+	int x=3
+	ADD2(x, 1)
+	PUSHALL()
+	return 0
+}
+
+end start

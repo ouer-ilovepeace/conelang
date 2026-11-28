@@ -1,0 +1,18 @@
+; cone 0.9.b -llvm:x64 回归：函数返回类型（int / long）与 define/ret/call
+; 注意：c 是 cone 的调用约定保留字，不能作变量名；非 int 返回值要用同宽度变量
+; 承接（0.9.2 的返回类型尺寸校验），否则 analyzer 会给尺寸诊断。
+include msvcrt
+func abs(:int) c int
+func strlen(:long) c long
+msg:"hello",0
+def big() long{
+    long v=123456
+    return v
+}
+def main(){
+    long n=big()
+    long m=strlen(addr msg)
+    int d=abs(0-9)
+    return d
+}
+end main

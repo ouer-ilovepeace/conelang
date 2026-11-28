@@ -1,0 +1,62 @@
+; cone 0.9preview2：asm64{} 里 if / elseif / else 的花括号写法全形态回归
+; 覆盖：}elseif 同行、}else{ 同行、} 与 else{ 分行、多个 elseif、
+;       嵌套 if、&& / || 组合条件、signed / unsigned 前缀、for 里的 break/continue。
+asm64{
+    ; 形态 1：}elseif 同行 + }else{ 同行（0.9preview 原本就支持）
+    if eax==0{
+        inc eax
+    }elseif eax==1{
+        dec eax
+    }elseif eax==2{
+        nop
+    }else{
+        hlt
+    }
+
+    ; 形态 2：} 单独占一行、else{ 另起一行（0.9preview 的 V 版在这里报错）
+    if eax==3{
+        inc eax
+    }
+    else{
+        nop
+    }
+
+    ; 形态 3：}elseif 同行 + } 单独占行 + else{ 另起行（用户报错写法）
+    if ecx==0{
+        inc ecx
+    }elseif ecx==1{
+        dec ecx
+    }
+    else{
+        nop
+    }
+
+    ; 形态 4：组合条件 / signed / unsigned / 单行 case
+    if eax>5 && ebx<10{
+        xor eax,eax
+    }elseif signed edx>0 || ecx==0{
+        inc edx
+    }elseif unsigned esi>=100{
+        dec esi
+    }
+    else{
+        nop
+    }
+
+    ; 形态 5：嵌套 if + for break/continue
+    for ecx<8{
+        if ecx==2{
+            continue
+        }
+        if ecx==6{
+            break
+        }
+        inc ecx
+    }
+}
+
+def start(){
+    return 0
+}
+
+end start

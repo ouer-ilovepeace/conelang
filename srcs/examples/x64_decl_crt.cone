@@ -1,0 +1,16 @@
+; cone 0.9.b -llvm:x64 回归：外部函数声明（c 无修饰 / 必须写返回类型 / 变参）
+; 0.9.b 规定：x64 外部函数一律 func 声明；c 与缺省都是「无修饰」链接符号；
+; 调用实参数超过声明的固定形参数即按 varargs 发射（declare/call 带 ...）。
+include msvcrt
+func printf(:long) c int
+func puts(:long) c int
+msg:"decl ok: a=%d b=%d\n",0
+bye:"done",0
+def main(){
+    int a=7
+    int b=a*6
+    printf(addr msg, a, b)
+    puts(addr bye)
+    return a+b
+}
+end main

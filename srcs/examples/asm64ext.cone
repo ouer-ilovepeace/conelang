@@ -1,0 +1,93 @@
+; cone 0.9preview3：asm64{} 扩充支持更多常用 x64 指令
+; 用户点名的 4 条（原来只能手写 db，现在可直接写指令）：
+;   db 48h,0Fh,0A4h,0D2h,20h   ; shld rdx,rdx,20h
+;   db 0FCh                     ; cld
+;   db 0F3h,0A4h                ; rep movsb
+;   db 0CBh                     ; retf
+asm64{
+    ; ---- 用户点名 4 条 ----
+    shld rdx,rdx,20h            ; -> db 48h,0Fh,0A4h,0D2h,20h
+    cld                         ; -> db 0FCh
+    rep movsb                   ; -> db 0F3h,0A4h
+    retf                        ; -> db 0CBh
+
+    ; ---- 字符串指令 + rep/repe/repne 前缀 ----
+    rep movsq                   ; F3 48 A5
+    rep movsw                   ; 66 F3 A5
+    rep stosq
+    repe cmpsb
+    repne scasb
+    movsb
+    movsd
+    stosb
+    lodsd
+    cmpsq
+    scasq
+    insd
+    outsb
+
+    ; ---- 标志位指令 ----
+    clc
+    stc
+    cli
+    sti
+    std
+    cmc
+    lahf
+    sahf
+    xlatb
+    int1
+
+    ; ---- 系统 / 0F 系列 ----
+    cpuid
+    rdtsc
+    rdtscp
+    rdpmc
+    sysenter
+    sysexit
+    swapgs
+    pause
+    invd
+    wbinvd
+    monitor
+    mwait
+
+    ; ---- retf / iret / enter ----
+    retf 8
+    retn
+    retn 16
+    iret
+    iretd
+    iretq
+    enter 16,0
+
+    ; ---- 双精度移位 shld / shrd ----
+    shld eax,ebx,4
+    shld rax,rbx,cl
+    shrd rdx,rdx,20h
+    shrd eax,ebx,4
+    shrd rax,rbx,cl
+
+    ; ---- 位扫描 / popcnt / lzcnt / tzcnt ----
+    bsf rax,rbx
+    bsr eax,ecx
+    popcnt rax,rbx
+    lzcnt rax,rbx
+    tzcnt rax,rbx
+    popcnt eax,dword ptr [rbx]
+
+    ; ---- 原子交换 / 比较交换 ----
+    xadd rax,rbx
+    xadd eax,ecx
+    cmpxchg rax,rbx
+    cmpxchg8b [rax]
+    cmpxchg16b [rax]
+    lock xadd [rax],rbx
+    lock add qword ptr [rax],1
+}
+
+def start(){
+    return 0
+}
+
+end start

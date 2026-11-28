@@ -1,0 +1,7 @@
+; 多文件联合链接示例（库单元：没有 end）
+; cone -llvm:x64 -O2 -out[multi] x64_multi_a.cone x64_multi_b.cone
+def helper(x:int) int{
+    f64 d=1.5
+    d=d*2.0
+    return x+2
+}

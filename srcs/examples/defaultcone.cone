@@ -1,0 +1,13 @@
+; cone 0.84：定义无参 def cone() 时，默认全局 SEH 的 except 会 call cone
+def cone(){
+    int ec=fuck
+    ec=ec+1
+    return ec
+}
+
+def start(){
+    int r=7
+    return 0
+}
+
+end start

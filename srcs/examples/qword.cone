@@ -1,0 +1,30 @@
+include msvcrt
+
+; cone 0.4 fix2：64 位参数不能使用 invoke，手工逆序 push，
+; 把一个 QWORD 拆成两个 DWORD（先高 32 位、再低 32 位）。
+; C 调用约定由调用者清栈，add esp 按【实际压栈字节数】算。
+
+long big
+f64 ratio
+int n
+buf byte[32]
+
+func putq(:long,:int)stdcall
+func putqc(:long)C
+func putd(:int)stdcall
+func cq(:long,:int)C
+
+def start(){
+	long localq
+	n=7
+	localq=big
+	putq(big,n)			; :long -> 拆 8 字节；:int -> 4 字节
+	putqc(big)			; C 约定 -> add esp, 8
+	putqc(12345678)		; QWORD 立即数 -> 低 dword + 高 dword 0
+	putd(big)			; 8 字节变量传给 :DWORD 形参 -> 只压低 dword
+	cq(big,n)			; C 约定混合尺寸 -> add esp, 12
+	putq(ratio,n)			; f64 按 8 字节原始位传（走 x87 fstp）
+	return 0
+}
+
+end start

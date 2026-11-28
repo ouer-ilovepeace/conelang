@@ -1,0 +1,26 @@
+include msvcrt
+
+; cone 0.6 fix1 · 需求 3 —— 取消 cone 侧名称修饰
+; MASM32 的 PROC 局部变量 / 形参天然是函数作用域：与全局同名不冲突，
+; 不同函数里的同名局部变量 / 形参也不冲突；只有同一函数内重复才报错。
+
+int g
+int shared
+
+def helper(shared:int){
+	int g                 ; 与全局 g 同名
+	int tmp
+	g=shared
+	tmp=g+1
+	return tmp
+}
+
+def start(){
+	int g                 ; 与 helper 的局部 g、全局 g 都同名
+	int shared            ; 与 helper 的形参 shared、全局 shared 都同名
+	g=7
+	shared=helper(g)
+	return shared
+}
+
+end start

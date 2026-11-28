@@ -1,0 +1,14 @@
+; cone 0.9.b -llvm:x64 回归：数据段字符串常量 + addr + 全局数组 + printf
+include msvcrt
+import x64crt
+int g=7
+buf int[8]
+fmt:"v=%d",0dh,0ah,0
+def main(){
+    int i=2
+    [int buf + i*4] = 42
+    printf(addr fmt, [int buf + i*4])
+    printf(addr fmt, g)
+    return 0
+}
+end main

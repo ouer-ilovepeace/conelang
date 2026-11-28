@@ -1,0 +1,16 @@
+; cone 0.9.b -llvm:x64 回归：c 与 stdcall 在 x64 下都不产生符号修饰
+; 依据：dumpbin /exports kernel32.lib 导出全是裸名（ActivateActCtx / AddAtomA / ...）。
+; 统一 Windows x64 ABI 后，c / stdcall 只剩语法兼容位，链接符号一律是 cone 里写的原名；
+; 0.9.a 的 `_name@N` 修饰口径作废。两份 declare 都应是裸名 @foo_c / @foo_stdcall。
+import x64crt
+fmt:"nodecor: v=%d\n",0
+func foo_c(:int) c int
+func foo_stdcall(:int,:int) stdcall int
+def main(){
+    int a=foo_c(7)
+    int b=foo_stdcall(20,22)
+    int r=a+b
+    printf(addr fmt, r)
+    return r
+}
+end main

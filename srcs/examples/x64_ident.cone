@@ -1,0 +1,30 @@
+; -llvm:x64 回归：标识符自由性
+; 引号前的 w 前缀、MASM32 伪指令 / 汇编指令 / 寄存器名在 x64 下都是普通
+; 标识符；只有 cone 关键字与 fuck 等 cone 特殊标识符仍受限。
+; 默认 x86 后端仍会拒绝这些名字（保留字表只对 MASM32 路径生效）。
+include user32
+include kernel32
+func MessageBoxA(:long,:long,:long,:int) int
+
+title:"MASM 伪指令名作数据标签",0
+int mov=11
+int proc=22
+int jmp=33
+int invoke=44
+int dword=55
+int eax=66
+int option=77
+
+struct record{ mov int  jmp int }
+record rec={1,2}
+
+def addup(mov:int, jmp:int) int{
+    int eax=mov+jmp
+    return eax
+}
+def start(){
+    int n=addup(mov,proc+jmp+invoke+dword+eax+option+rec.mov+rec.jmp)
+    MessageBoxA(0, addr title, addr title, n)
+    return n
+}
+end start
